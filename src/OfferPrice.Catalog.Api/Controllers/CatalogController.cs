@@ -53,15 +53,25 @@ public class CatalogController : ControllerBase
     {
         var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product(id));
 
-        await _database.UpdateProduct(id, product);
+        var prod = await _database.UpdateProduct(id, product);
+
+        if (prod == null)
+        {
+            return NotFound();
+        }
 
         return Ok();
     }
 
     [HttpPost("{id}/hide")]
-    public async Task<IActionResult> HideProduct([FromRoute] string id, [FromBody] ProductRequest productRequest)
+    public async Task<IActionResult> HideProduct([FromRoute] string id)
     {
-        var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product(id));
+        var product = await _database.GetProductById(id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
 
         product.Status = "hidden";
 
@@ -71,9 +81,14 @@ public class CatalogController : ControllerBase
     }
 
     [HttpPost("{id}/show")]
-    public async Task<IActionResult> ShowProduct([FromRoute] string id, [FromBody] ProductRequest productRequest)
+    public async Task<IActionResult> ShowProduct([FromRoute] string id)
     {
-        var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product(id));
+        var product = await _database.GetProductById(id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
 
         product.Status = "observable";
 
