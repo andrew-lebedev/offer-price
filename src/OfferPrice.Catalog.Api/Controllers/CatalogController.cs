@@ -1,73 +1,85 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using OfferPrice.Catalog.Api.DataService;
 using OfferPrice.Catalog.Api.Models;
+using OfferPrice.Catalog.Domain;
 
 namespace OfferPrice.Catalog.Api.Controllers;
 
 [ApiController]
-[Route("api/catalog")]
+[Route("api/products")]
 public class CatalogController : ControllerBase
 {
-    private readonly IDatabaseService _database;
+    private readonly IProductRepository _database;
     private readonly IMapper _mapper;
 
-    public CatalogController(IDatabaseService database,IMapper mapper)
+    public CatalogController(IProductRepository database, IMapper mapper)
     {
         _database = database;
         _mapper = mapper;
     }
 
-    [HttpGet("products")]
-    public async Task<IResult> GetProducts([FromQuery] string name, [FromQuery] string username, [FromQuery] string category)
+    [HttpGet("")]
+    public async Task<IActionResult> GetProducts([FromQuery] string name, [FromQuery] string username, [FromQuery] string category)
     {
         var products = await _database.GetProducts(name, username, category);
 
-        return Results.Ok(products);
+        var productsResponse = products.Select(_mapper.Map<Product, ProductResponse>).ToList();
+
+        return Ok(productsResponse);
     }
 
-    [HttpGet("products/{id}")]
-    public async Task<IResult> GetProductById([FromRoute] string id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProductById([FromRoute] string id)
     {
         var product = await _database.GetProductById(id);
 
-        return Results.Ok(product);
+        var productResponse = _mapper.Map<Product, ProductResponse>(product);
+
+        return Ok(productResponse);
     }
 
-    [HttpPost("products")]
-    public async Task<IResult> InsertProduct([FromBody] ProductRequest productRequest)
+    [HttpPost("")]
+    public async Task<IActionResult> InsertProduct([FromBody] ProductRequest productRequest)
     {
         var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product());
 
         await _database.InsertProduct(product);
 
-        return Results.Ok();
+        return Ok();
     }
 
-    [HttpPut("products/{id}")]
-    public async Task<IResult> UpdateProduct([FromRoute] string id, [FromBody] ProductRequest productRequest)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct([FromRoute] string id, [FromBody] ProductRequest productRequest)
     {
         var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product(id));
 
         await _database.UpdateProduct(id, product);
 
-        return Results.Ok();
+        return Ok();
     }
 
-    [HttpPost("products/{id}/hide")]
-    public async Task<IResult> HideProduct([FromRoute] string id)
+    [HttpPost("{id}/hide")]
+    public async Task<IActionResult> HideProduct([FromRoute] string id, [FromBody] ProductRequest productRequest)
     {
-        await _database.HideProduct(id);
+        var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product(id));
 
-        return Results.Ok();
+        product.Status = "hidden";
+
+        await _database.UpdateProduct(id, product);
+
+        return Ok();
     }
 
-    [HttpPost("products/{id}/show")]
-    public async Task<IResult> ShowProduct([FromRoute] string id)
+    [HttpPost("{id}/show")]
+    public async Task<IActionResult> ShowProduct([FromRoute] string id, [FromBody] ProductRequest productRequest)
     {
-        await _database.ShowProduct(id);
+        var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product(id));
 
-        return Results.Ok();
+        product.Status = "observable";
+
+        await _database.UpdateProduct(id, product);
+
+        return Ok();
     }
 }
 

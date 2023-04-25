@@ -1,13 +1,15 @@
 ﻿using MongoDB.Driver;
-using OfferPrice.Catalog.Api.Models;
+using OfferPrice.Catalog.Domain;
 
-namespace OfferPrice.Catalog.Api.DataService;
-public class DatabaseService : IDatabaseService
+namespace OfferPrice.Catalog.Infrastucture;
+
+public class ProductRepository:IProductRepository
 {
+
     private readonly IMongoDatabase _database;
     private readonly IMongoCollection<Product> _products;
 
-    public DatabaseService(IMongoDatabase database)
+    public ProductRepository(IMongoDatabase database)
     {
         _database = database;
 
@@ -37,36 +39,21 @@ public class DatabaseService : IDatabaseService
         return product;
     }
 
-    public async Task HideProduct(string id)
+    public Task InsertProduct(Product product)
     {
-        await _products.UpdateOneAsync(
-            Builders<Product>.Filter.Where(x => x.Id == id),
-            Builders<Product>.Update.Set(x => x.Status, "hidden")
-            );
+        return _products.InsertOneAsync(product);
     }
 
-    public async Task InsertProduct(Product product)
+    public Task<UpdateResult> UpdateProduct(string id, Product product)
     {
-        await _products.InsertOneAsync(product);
-    }
-
-    public async Task ShowProduct(string id)
-    {
-        await _products.UpdateOneAsync(
-            Builders<Product>.Filter.Where(x => x.Id == id),
-            Builders<Product>.Update.Set(x => x.Status, "observable")
-            );
-    }
-
-    public async Task UpdateProduct(string id, Product product)
-    {
-        await _products.UpdateOneAsync(
+        return _products.UpdateOneAsync(
             Builders<Product>.Filter.Where(x => x.Id == id),
             Builders<Product>.Update.Set(x => x.Name, product.Name)
                                     .Set(x => x.Category, product.Category)
                                     .Set(x => x.Description, product.Description)
                                     .Set(x => x.User, product.User)
                                     .Set(x => x.Price, product.Price)
+                                    .Set(x => x.Status, product.Status)
             );
 
     }
