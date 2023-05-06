@@ -1,12 +1,7 @@
-﻿namespace OfferPrice.Catalog.Domain;
+﻿namespace OfferPrice.Catalog.Api.Models;
+
 public class Product
 {
-    public Product()
-    {
-        Id = Guid.NewGuid().ToString();
-        Status = "hidden";
-    }
-
     public string Id { get; set; }
 
     public string Name { get; set; }
@@ -21,4 +16,3 @@ public class Product
 
     public string Status { get; set; }
 }
-

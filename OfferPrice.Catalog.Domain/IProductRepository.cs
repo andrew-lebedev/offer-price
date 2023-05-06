@@ -1,14 +1,12 @@
-﻿using MongoDB.Driver;
-
-namespace OfferPrice.Catalog.Domain;
+﻿namespace OfferPrice.Catalog.Domain;
 public interface IProductRepository
 {
-    Task<List<Product>> GetProducts(string name, string username, string category);
+    Task<PageResult<Product>> GetProducts(string name, string username, string category, int page, int perPage, CancellationToken token);
 
-    Task<Product> GetProductById(string id);
+    Task<Product> GetProductById(string id, CancellationToken token);
 
-    Task InsertProduct(Product product);
+    Task InsertProduct(Product product, CancellationToken token);
 
-    Task<UpdateResult> UpdateProduct(string id, Product product);
+    Task UpdateProduct(Product product, CancellationToken token);
 }
 

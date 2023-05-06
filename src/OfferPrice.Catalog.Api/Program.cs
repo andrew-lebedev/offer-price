@@ -2,6 +2,7 @@ using MongoDB.Driver;
 using OfferPrice.Catalog.Api;
 using OfferPrice.Catalog.Domain;
 using OfferPrice.Catalog.Infrastucture;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.Get<AppSettings>()!;
@@ -16,7 +17,16 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+
+builder.Services.AddProblemDetails();
+
+builder.Services.AddScoped<OperationCanceledException>();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
 
 var app = builder.Build();
 

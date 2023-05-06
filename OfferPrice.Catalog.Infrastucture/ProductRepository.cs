@@ -3,20 +3,17 @@ using OfferPrice.Catalog.Domain;
 
 namespace OfferPrice.Catalog.Infrastucture;
 
-public class ProductRepository:IProductRepository
+public class ProductRepository : IProductRepository
 {
-
-    private readonly IMongoDatabase _database;
     private readonly IMongoCollection<Product> _products;
 
     public ProductRepository(IMongoDatabase database)
     {
-        _database = database;
-
-        _products = _database.GetCollection<Product>("Products");
+        _products = database.GetCollection<Product>("Products");
     }
 
-    public async Task<List<Product>> GetProducts(string name, string username, string category)
+    public async Task<PageResult<Product>> GetProducts
+        (string name, string username, string category, int page, int perPage, CancellationToken token)
     {
         var filterByName =
             name != null ? Builders<Product>.Filter.Eq(x => x.Name, name) : Builders<Product>.Filter.Empty;
@@ -27,35 +24,42 @@ public class ProductRepository:IProductRepository
         var filterByCategory =
             category != null ? Builders<Product>.Filter.Eq(x => x.Category, category) : Builders<Product>.Filter.Empty;
 
-        var products = await _products.Find(filterByName & filterByUsername & filterByCategory).ToListAsync();
+        var totalPages =
+            await _products.CountDocumentsAsync(filterByName & filterByUsername & filterByCategory,
+                                                new CountOptions(),
+                                                token);
 
-        return products;
+        totalPages = (long)Math.Ceiling((double)(totalPages / perPage));
+
+        var products = await _products.Find(filterByName & filterByUsername & filterByCategory)
+                        .Skip((page - 1) * perPage)
+                        .Limit(perPage)
+                        .ToListAsync(token);
+
+        return new PageResult<Product>(page, perPage, totalPages, products);
     }
 
-    public async Task<Product> GetProductById(string id)
+    public Task<Product> GetProductById(string id, CancellationToken token)
     {
-        var product = await _products.Find(x => x.Id == id).FirstOrDefaultAsync();
-
-        return product;
+        return _products.Find(x => x.Id == id).FirstOrDefaultAsync(token);
     }
 
-    public Task InsertProduct(Product product)
+    public Task InsertProduct(Product product, CancellationToken token)
     {
-        return _products.InsertOneAsync(product);
+        return _products.InsertOneAsync(product, new InsertOneOptions(), token);
     }
 
-    public Task<UpdateResult> UpdateProduct(string id, Product product)
+    public Task UpdateProduct(Product product, CancellationToken token)
     {
         return _products.UpdateOneAsync(
-            Builders<Product>.Filter.Where(x => x.Id == id),
+            Builders<Product>.Filter.Where(x => x.Id == product.Id),
             Builders<Product>.Update.Set(x => x.Name, product.Name)
                                     .Set(x => x.Category, product.Category)
                                     .Set(x => x.Description, product.Description)
-                                    .Set(x => x.User, product.User)
                                     .Set(x => x.Price, product.Price)
-                                    .Set(x => x.Status, product.Status)
+                                    .Set(x => x.Status, product.Status),
+            cancellationToken: token
             );
-
     }
 }
 

@@ -18,81 +18,105 @@ public class CatalogController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("")]
-    public async Task<IActionResult> GetProducts([FromQuery] string name, [FromQuery] string username, [FromQuery] string category)
+    [HttpGet]
+    public async Task<IActionResult> GetProducts
+        ([FromQuery] GetProductsRequest productRequest, CancellationToken token)
     {
-        var products = await _database.GetProducts(name, username, category);
+        var page = await _database.GetProducts(productRequest.Name,
+                                        productRequest.Username,
+                                        productRequest.Category,
+                                        productRequest.Page,
+                                        productRequest.PerPage,
+                                        token);
 
-        var productsResponse = products.Select(_mapper.Map<Product, ProductResponse>).ToList();
+        var products = page.Items.Select(_mapper.Map<Domain.Product, Models.Product>).ToList();
 
-        return Ok(productsResponse);
+        var pageResult = new PageResult<Models.Product>(page.Page, page.PerPage, page.TotalPages, products);
+
+        return Ok(page);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetProductById([FromRoute] string id)
+    public async Task<IActionResult> GetProductById([FromRoute] string id, CancellationToken token)
     {
-        var product = await _database.GetProductById(id);
+        var product = await _database.GetProductById(id, token);
 
-        var productResponse = _mapper.Map<Product, ProductResponse>(product);
+        var productResponse = _mapper.Map<Domain.Product, Models.Product>(product);
 
         return Ok(productResponse);
     }
 
-    [HttpPost("")]
-    public async Task<IActionResult> InsertProduct([FromBody] ProductRequest productRequest)
+    [HttpPost]
+    public async Task<IActionResult> InsertProduct([FromBody] InsertProductRequest productRequest, CancellationToken token)
     {
-        var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product());
+        var product = _mapper.Map<InsertProductRequest, Domain.Product>(productRequest);
 
-        await _database.InsertProduct(product);
+        await _database.InsertProduct(product, token);
 
         return Ok();
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct([FromRoute] string id, [FromBody] ProductRequest productRequest)
+    public async Task<IActionResult> UpdateProduct([FromRoute] string id, [FromBody] UpdateProductRequest productRequest, CancellationToken token)
     {
-        var product = _mapper.Map<ProductRequest, Product>(productRequest, new Product(id));
 
-        var prod = await _database.UpdateProduct(id, product);
-
-        if (prod == null)
-        {
-            return NotFound();
-        }
-
-        return Ok();
-    }
-
-    [HttpPost("{id}/hide")]
-    public async Task<IActionResult> HideProduct([FromRoute] string id)
-    {
-        var product = await _database.GetProductById(id);
+        var product = await _database.GetProductById(id, token);
 
         if (product == null)
         {
             return NotFound();
         }
 
-        product.Status = "hidden";
+        var updatedProduct = _mapper.Map(productRequest, product);
 
-        await _database.UpdateProduct(id, product);
+        await _database.UpdateProduct(updatedProduct, token);
+        return Ok();
+    }
+
+    [HttpPost("{id}/hide")]
+    public async Task<IActionResult> HideProduct([FromRoute] string id, CancellationToken token)
+    {
+        var product = await _database.GetProductById(id, token);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        if (product.Status == "hidden")
+        {
+            return Conflict();
+        }
+        else
+        {
+            product.Status = "hidden";
+        }
+
+        await _database.UpdateProduct(product, token);
 
         return Ok();
     }
 
     [HttpPost("{id}/show")]
-    public async Task<IActionResult> ShowProduct([FromRoute] string id)
+    public async Task<IActionResult> ShowProduct([FromRoute] string id, CancellationToken token)
     {
-        var product = await _database.GetProductById(id);
+        var product = await _database.GetProductById(id, token);
 
         if (product == null)
         {
             return NotFound();
         }
 
-        product.Status = "observable";
+        if (product.Status == "observable")
+        {
+            return Conflict();
+        }
+        else
+        {
+            product.Status = "observable";
+        }
 
-        await _database.UpdateProduct(id, product);
+        await _database.UpdateProduct(product, token);
 
         return Ok();
     }
