@@ -15,6 +15,8 @@ namespace OfferPrice.Catalog.Api.Models
         [Required]
         public string Category { get; set; }
 
+        public string Brand { get; set; }
+
         [Required]
         [Range(0, (double)decimal.MaxValue, ErrorMessage = "Invalid minimal price")]
         public decimal Price { get; set; }

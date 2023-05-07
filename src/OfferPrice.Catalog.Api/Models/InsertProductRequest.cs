@@ -14,6 +14,8 @@ public class InsertProductRequest
     [Required]
     public string Category { get; set; }
 
+    public string Brand { get; set; }
+
     [Required]
     public string User { get; set; }
 

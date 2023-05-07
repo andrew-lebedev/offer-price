@@ -59,6 +59,7 @@ public class ProductRepository : IProductRepository
                                     .Set(x => x.Category, product.Category)
                                     .Set(x => x.Description, product.Description)
                                     .Set(x => x.Image, product.Image)
+                                    .Set(x => x.Brand, product.Brand)
                                     .Set(x => x.Price, product.Price)
                                     .Set(x => x.Status, product.Status),
             cancellationToken: token
