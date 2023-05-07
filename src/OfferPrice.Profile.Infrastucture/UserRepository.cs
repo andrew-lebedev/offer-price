@@ -20,12 +20,14 @@ public class UserRepository : IUserRepository
 
     public Task<List<User>> GetUsers(CancellationToken token)
     {
-        return _users.Find(Builders<User>.Filter.Empty).ToListAsync(token);
+        return _users.Find(Builders<User>.Filter.Empty)
+                     .ToListAsync(token);
     }
 
     public Task<User> GetUserById(string id, CancellationToken token)
     {
-        return _users.Find(Builders<User>.Filter.Eq(x => x.Id, id)).SingleOrDefaultAsync(token);
+        return _users.Find(Builders<User>.Filter.Eq(x => x.Id, id))
+                     .SingleOrDefaultAsync(token);
     }
 
     public async Task InsertUser(User user, CancellationToken token)

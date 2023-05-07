@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace OfferPrice.Catalog.Api.Filters
+namespace OfferPrice.Profile.Api.Filters
 {
     public class OperationCanceledFilter : IExceptionFilter
     {

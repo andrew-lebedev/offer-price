@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using OfferPrice.Catalog.Api;
+using OfferPrice.Catalog.Api.Filters;
 using OfferPrice.Catalog.Domain;
 using OfferPrice.Catalog.Infrastructure;
 using System.Text.Json.Serialization;
@@ -20,9 +21,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddProblemDetails();
 
-builder.Services.AddScoped<OperationCanceledException>();
+builder.Services.AddScoped<OperationCanceledFilter>();
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options => 
+{
+    options.Filters.Add<OperationCanceledFilter>();
+}).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -32,8 +36,6 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseRouting();
 
 app.MapControllers();
 

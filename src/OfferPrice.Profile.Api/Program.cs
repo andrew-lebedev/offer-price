@@ -10,7 +10,7 @@ var settings = builder.Configuration.Get<AppSettings>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton(provider => 
+builder.Services.AddSingleton(provider =>
     new MongoClient(settings.Database.ConnectionString).GetDatabase(settings.Database.DatabaseName));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -21,14 +21,15 @@ builder.Services.AddScoped<OperationCanceledFilter>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<OperationCanceledFilter>();
+});
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 

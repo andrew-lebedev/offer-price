@@ -22,7 +22,7 @@ public class ProfileController : ControllerBase
     {
         var users = await _users.GetUsers(token);
 
-        var userResponse = users.Select(_mapper.Map<UserResponse>);
+        var userResponse = users.Select(_mapper.Map<Models.User>);
 
         return Ok(userResponse);
     }
@@ -34,10 +34,10 @@ public class ProfileController : ControllerBase
 
         if (user == null)
         {
-            return BadRequest();
+            return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
         }
 
-        var userResponse = _mapper.Map<UserResponse>(user);
+        var userResponse = _mapper.Map<Models.User>(user);
 
         return Ok(userResponse);
     }
@@ -49,17 +49,17 @@ public class ProfileController : ControllerBase
 
         await _users.InsertUser(user, token);
 
-        return Ok();
+        return Ok(user);
     }
 
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UserRequest updateUser, CancellationToken token)
     {
         var user = await _users.GetUserById(id, token);
 
         if (user == null)
         {
-            return BadRequest();
+            return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
         }
 
         var userUpdated = _mapper.Map<Domain.User>(updateUser);
@@ -69,14 +69,14 @@ public class ProfileController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser([FromRoute] string id, CancellationToken token)
     {
         var user = _users.GetUserById(id, token);
 
         if (user == null)
         {
-            return BadRequest();
+            return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
         }
 
         await _users.DeleteUser(id, token);

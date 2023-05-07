@@ -24,19 +24,21 @@ public class ProductRepository : IProductRepository
         var filterByCategory =
             category != null ? Builders<Product>.Filter.Eq(x => x.Category, category) : Builders<Product>.Filter.Empty;
 
-        var totalPages =
-            await _products.CountDocumentsAsync(filterByName & filterByUsername & filterByCategory,
-                                                new CountOptions(),
-                                                token);
+        var filter = Builders<Product>.Filter.And(filterByName, filterByUsername, filterByCategory);
 
-        totalPages = (long)Math.Ceiling((double)(totalPages / perPage));
+        var documentsTask = _products.CountDocumentsAsync(filter, cancellationToken: token);
 
-        var products = await _products.Find(filterByName & filterByUsername & filterByCategory)
-                        .Skip((page - 1) * perPage)
-                        .Limit(perPage)
-                        .ToListAsync(token);
 
-        return new PageResult<Product>(page, perPage, totalPages, products);
+        var productsTask = _products.Find(filterByName & filterByUsername & filterByCategory)
+                       .Skip((page - 1) * perPage)
+                       .Limit(perPage)
+                       .ToListAsync(token);
+
+        await Task.WhenAll(documentsTask, productsTask);
+
+        var totalPages = (long)Math.Ceiling((double)(documentsTask.Result / perPage));
+
+        return new PageResult<Product>(page, perPage, totalPages, productsTask.Result);
     }
 
     public Task<Product> GetProductById(string id, CancellationToken token)

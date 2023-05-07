@@ -7,9 +7,7 @@ public class UserMappingProfile : AutoMapper.Profile
     {
         CreateMap<UserRequest, Domain.User>();
 
-        CreateMap<User, Domain.User>();
-
-        CreateMap<Domain.User, UserResponse>();
+        CreateMap<Domain.User, Models.User>();
     }
 }
 
