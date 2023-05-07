@@ -13,6 +13,8 @@ public class Product
 
     public string Description { get; set; }
 
+    public string Image { get; set; }
+
     public string User { get; set; }
 
     public string Category { get; set; }

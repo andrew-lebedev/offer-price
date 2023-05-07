@@ -3,9 +3,9 @@ using OfferPrice.Catalog.Api.Models;
 
 namespace OfferPrice.Catalog.Api.Profiles;
 
-public class MappingProfile : Profile
+public class ProductMappingProfile : Profile
 {
-    public MappingProfile()
+    public ProductMappingProfile()
     {
         CreateMap<InsertProductRequest, Domain.Product>();
         CreateMap<UpdateProductRequest, Domain.Product>();

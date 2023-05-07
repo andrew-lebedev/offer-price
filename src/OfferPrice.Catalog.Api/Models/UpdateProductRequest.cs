@@ -10,6 +10,9 @@ namespace OfferPrice.Catalog.Api.Models
         public string Description { get; set; }
 
         [Required]
+        public string Image { get; set; }
+
+        [Required]
         public string Category { get; set; }
 
         [Required]

@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using OfferPrice.Catalog.Api;
 using OfferPrice.Catalog.Domain;
-using OfferPrice.Catalog.Infrastucture;
+using OfferPrice.Catalog.Infrastructure;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);

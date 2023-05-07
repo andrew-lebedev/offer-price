@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using OfferPrice.Catalog.Domain;
 
-namespace OfferPrice.Catalog.Infrastucture;
+namespace OfferPrice.Catalog.Infrastructure;
 
 public class ProductRepository : IProductRepository
 {
@@ -56,6 +56,7 @@ public class ProductRepository : IProductRepository
             Builders<Product>.Update.Set(x => x.Name, product.Name)
                                     .Set(x => x.Category, product.Category)
                                     .Set(x => x.Description, product.Description)
+                                    .Set(x => x.Image, product.Image)
                                     .Set(x => x.Price, product.Price)
                                     .Set(x => x.Status, product.Status),
             cancellationToken: token
