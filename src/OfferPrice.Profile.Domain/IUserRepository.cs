@@ -2,14 +2,14 @@
 
 public interface IUserRepository
 {
-    Task<List<User>> GetUsers(CancellationToken token);
+    Task<List<User>> Get(CancellationToken token);
 
-    Task<User> GetUserById(string id, CancellationToken token);
+    Task<User> GetById(string id, CancellationToken token);
 
-    Task InsertUser(User user, CancellationToken token);
+    Task Insert(User user, CancellationToken token);
 
-    Task UpdateUser(User user, CancellationToken token);
+    Task Update(User user, CancellationToken token);
 
-    Task DeleteUser(string id, CancellationToken token);
+    Task Delete(string id, CancellationToken token);
 }
 

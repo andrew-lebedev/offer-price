@@ -9,11 +9,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Catalog.Domain",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Catalog.Infrastructure", "src\OfferPrice.Catalog.Infrastucture\OfferPrice.Catalog.Infrastructure.csproj", "{4D664DE0-0091-4E49-AEE0-8C059470434D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Profile.Api", "src\OfferPrice.Profile.Api\OfferPrice.Profile.Api.csproj", "{5002AC44-9DCD-40C6-94C7-7AB384891788}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Profile.Api", "src\OfferPrice.Profile.Api\OfferPrice.Profile.Api.csproj", "{5002AC44-9DCD-40C6-94C7-7AB384891788}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Profile.Domain", "src\OfferPrice.Profile.Domain\OfferPrice.Profile.Domain.csproj", "{40FFF9D0-FF2D-4DDA-A628-70AD06600E82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Profile.Domain", "src\OfferPrice.Profile.Domain\OfferPrice.Profile.Domain.csproj", "{40FFF9D0-FF2D-4DDA-A628-70AD06600E82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Profile.Infrastructure", "src\OfferPrice.Profile.Infrastucture\OfferPrice.Profile.Infrastructure.csproj", "{154DE340-C35E-4C13-9ECE-F994B73FCCC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Profile.Infrastructure", "src\OfferPrice.Profile.Infrastucture\OfferPrice.Profile.Infrastructure.csproj", "{154DE340-C35E-4C13-9ECE-F994B73FCCC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Auction.Api", "src\OfferPrice.Auction.Api\OfferPrice.Auction.Api.csproj", "{5983E9E0-1CE7-4C3C-99BE-FBC7E0AEDCE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Auction.Domain", "src\OfferPrice.Auction.Domain\OfferPrice.Auction.Domain.csproj", "{6BFA5336-135E-4F00-8D31-BFA0FA103A5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Auction.Infrastructure", "OfferPrice.Auction.Infrastructure\OfferPrice.Auction.Infrastructure.csproj", "{42632FF4-ABF3-45EB-A5D3-0420BEF57CCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +51,18 @@ Global
 		{154DE340-C35E-4C13-9ECE-F994B73FCCC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{154DE340-C35E-4C13-9ECE-F994B73FCCC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{154DE340-C35E-4C13-9ECE-F994B73FCCC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5983E9E0-1CE7-4C3C-99BE-FBC7E0AEDCE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5983E9E0-1CE7-4C3C-99BE-FBC7E0AEDCE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5983E9E0-1CE7-4C3C-99BE-FBC7E0AEDCE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5983E9E0-1CE7-4C3C-99BE-FBC7E0AEDCE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BFA5336-135E-4F00-8D31-BFA0FA103A5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BFA5336-135E-4F00-8D31-BFA0FA103A5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BFA5336-135E-4F00-8D31-BFA0FA103A5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BFA5336-135E-4F00-8D31-BFA0FA103A5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42632FF4-ABF3-45EB-A5D3-0420BEF57CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42632FF4-ABF3-45EB-A5D3-0420BEF57CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42632FF4-ABF3-45EB-A5D3-0420BEF57CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42632FF4-ABF3-45EB-A5D3-0420BEF57CCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,9 +1,9 @@
 ﻿using OfferPrice.Profile.Api.Models;
 
 namespace OfferPrice.Profile.Api.Profiles;
-public class UserMappingProfile : AutoMapper.Profile
+public class MappingProfile : AutoMapper.Profile
 {
-    public UserMappingProfile()
+    public MappingProfile()
     {
         CreateMap<UserRequest, Domain.User>();
 
