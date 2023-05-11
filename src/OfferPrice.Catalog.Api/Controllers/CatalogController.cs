@@ -22,12 +22,15 @@ public class CatalogController : ControllerBase
     public async Task<IActionResult> GetProducts
         ([FromQuery] GetProductsRequest productRequest, CancellationToken token)
     {
-        var page = await _products.GetProducts(productRequest.Name,
-                                        productRequest.Username,
-                                        productRequest.Category,
-                                        productRequest.Page,
-                                        productRequest.PerPage,
-                                        token);
+        var page = await _products.Get
+            (
+            productRequest.Name,
+            productRequest.Username,
+            productRequest.Category,
+            productRequest.Page,
+            productRequest.PerPage,
+            token
+            );
 
         var products = page.Items.Select(_mapper.Map<Domain.Product, Models.Product>).ToList();
 
@@ -39,7 +42,7 @@ public class CatalogController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById([FromRoute] string id, CancellationToken token)
     {
-        var product = await _products.GetProductById(id, token);
+        var product = await _products.GetById(id, token);
 
         var productResponse = _mapper.Map<Domain.Product, Models.Product>(product);
 
@@ -51,7 +54,7 @@ public class CatalogController : ControllerBase
     {
         var product = _mapper.Map<InsertProductRequest, Domain.Product>(productRequest);
 
-        await _products.InsertProduct(product, token);
+        await _products.Insert(product, token);
 
         return Ok();
     }
@@ -60,7 +63,7 @@ public class CatalogController : ControllerBase
     public async Task<IActionResult> UpdateProduct([FromRoute] string id, [FromBody] UpdateProductRequest productRequest, CancellationToken token)
     {
 
-        var product = await _products.GetProductById(id, token);
+        var product = await _products.GetById(id, token);
 
         if (product == null)
         {
@@ -69,14 +72,14 @@ public class CatalogController : ControllerBase
 
         var updatedProduct = _mapper.Map(productRequest, product);
 
-        await _products.UpdateProduct(updatedProduct, token);
+        await _products.Update(updatedProduct, token);
         return Ok();
     }
 
     [HttpPost("{id}/hide")]
     public async Task<IActionResult> HideProduct([FromRoute] string id, CancellationToken token)
     {
-        var product = await _products.GetProductById(id, token);
+        var product = await _products.GetById(id, token);
 
         if (product == null)
         {
@@ -92,7 +95,7 @@ public class CatalogController : ControllerBase
             product.Status = "hidden";
         }
 
-        await _products.UpdateProduct(product, token);
+        await _products.Update(product, token);
 
         return Ok();
     }
@@ -100,7 +103,7 @@ public class CatalogController : ControllerBase
     [HttpPost("{id}/show")]
     public async Task<IActionResult> ShowProduct([FromRoute] string id, CancellationToken token)
     {
-        var product = await _products.GetProductById(id, token);
+        var product = await _products.GetById(id, token);
 
         if (product == null)
         {
@@ -116,7 +119,7 @@ public class CatalogController : ControllerBase
             product.Status = "observable";
         }
 
-        await _products.UpdateProduct(product, token);
+        await _products.Update(product, token);
 
         return Ok();
     }

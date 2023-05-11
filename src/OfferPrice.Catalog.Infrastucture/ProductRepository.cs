@@ -9,10 +9,10 @@ public class ProductRepository : IProductRepository
 
     public ProductRepository(IMongoDatabase database)
     {
-        _products = database.GetCollection<Product>("Products");
+        _products = database.GetCollection<Product>("products");
     }
 
-    public async Task<PageResult<Product>> GetProducts
+    public async Task<PageResult<Product>> Get
         (string name, string username, string category, int page, int perPage, CancellationToken token)
     {
         var filterByName =
@@ -41,17 +41,17 @@ public class ProductRepository : IProductRepository
         return new PageResult<Product>(page, perPage, totalPages, productsTask.Result);
     }
 
-    public Task<Product> GetProductById(string id, CancellationToken token)
+    public Task<Product> GetById(string id, CancellationToken token)
     {
         return _products.Find(x => x.Id == id).FirstOrDefaultAsync(token);
     }
 
-    public Task InsertProduct(Product product, CancellationToken token)
+    public Task Insert(Product product, CancellationToken token)
     {
-        return _products.InsertOneAsync(product, new InsertOneOptions(), token);
+        return _products.InsertOneAsync(product, cancellationToken: token);
     }
 
-    public Task UpdateProduct(Product product, CancellationToken token)
+    public Task Update(Product product, CancellationToken token)
     {
         return _products.UpdateOneAsync(
             Builders<Product>.Filter.Where(x => x.Id == product.Id),

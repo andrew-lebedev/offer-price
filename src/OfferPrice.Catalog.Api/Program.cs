@@ -15,6 +15,7 @@ builder.Services
     new MongoClient(settings.Database.ConnectionString).GetDatabase(settings.Database.DatabaseName));
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,7 +24,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddScoped<OperationCanceledFilter>();
 
-builder.Services.AddControllers(options => 
+builder.Services.AddControllers(options =>
 {
     options.Filters.Add<OperationCanceledFilter>();
 }).AddJsonOptions(options =>

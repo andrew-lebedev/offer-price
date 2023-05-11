@@ -10,32 +10,32 @@ public class UserRepository : IUserRepository
 
     public UserRepository(IMongoDatabase database)
     {
-        _users = database.GetCollection<User>("Users");
+        _users = database.GetCollection<User>("users");
     }
 
-    public async Task DeleteUser(string id, CancellationToken token)
+    public async Task Delete(string id, CancellationToken token)
     {
         await _users.DeleteOneAsync(Builders<User>.Filter.Eq(x => x.Id, id), token);
     }
 
-    public Task<List<User>> GetUsers(CancellationToken token)
+    public Task<List<User>> Get(CancellationToken token)
     {
         return _users.Find(Builders<User>.Filter.Empty)
                      .ToListAsync(token);
     }
 
-    public Task<User> GetUserById(string id, CancellationToken token)
+    public Task<User> GetById(string id, CancellationToken token)
     {
         return _users.Find(Builders<User>.Filter.Eq(x => x.Id, id))
                      .SingleOrDefaultAsync(token);
     }
 
-    public async Task InsertUser(User user, CancellationToken token)
+    public async Task Insert(User user, CancellationToken token)
     {
-        await _users.InsertOneAsync(user, new InsertOneOptions(), token);
+        await _users.InsertOneAsync(user, cancellationToken: token);
     }
 
-    public async Task UpdateUser(User user, CancellationToken token)
+    public async Task Update(User user, CancellationToken token)
     {
         await _users.UpdateOneAsync(
             Builders<User>.Filter.Where(x => x.Id == user.Id),
@@ -44,8 +44,7 @@ public class UserRepository : IUserRepository
                                  .Set(x => x.Middlename, user.Middlename)
                                  .Set(x => x.Email, user.Email)
                                  .Set(x => x.Phone, user.Phone),
-            new UpdateOptions(),
-            token);
+            cancellationToken: token);
     }
 }
 
