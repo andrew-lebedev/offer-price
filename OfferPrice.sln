@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Auction.Api", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Auction.Domain", "src\OfferPrice.Auction.Domain\OfferPrice.Auction.Domain.csproj", "{6BFA5336-135E-4F00-8D31-BFA0FA103A5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Auction.Infrastructure", "OfferPrice.Auction.Infrastructure\OfferPrice.Auction.Infrastructure.csproj", "{42632FF4-ABF3-45EB-A5D3-0420BEF57CCB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfferPrice.Auction.Infrastructure", "src\OfferPrice.Auction.Infrastructure\OfferPrice.Auction.Infrastructure.csproj", "{42632FF4-ABF3-45EB-A5D3-0420BEF57CCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

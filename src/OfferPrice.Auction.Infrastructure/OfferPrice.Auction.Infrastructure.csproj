@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\OfferPrice.Auction.Domain\OfferPrice.Auction.Domain.csproj" />
+    <ProjectReference Include="..\OfferPrice.Auction.Domain\OfferPrice.Auction.Domain.csproj" />
   </ItemGroup>
 
 </Project>
