@@ -1,13 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OfferPrice.Catalog.Api.Models
-{
-    public class LikeRequest
-    {
-        [Required]
-        public string ProductId { get; set; }
+namespace OfferPrice.Catalog.Api.Models;
 
-        [Required]
-        public string UserId { get; set; }
-    }
+public class LikeRequest
+{
+    [Required]
+    public string UserId { get; set; }
 }

@@ -11,7 +11,7 @@ var settings = builder.Configuration.Get<AppSettings>()!;
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services
-    .AddSingleton(provider =>
+    .AddSingleton(_ =>
     new MongoClient(settings.Database.ConnectionString).GetDatabase(settings.Database.DatabaseName));
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
