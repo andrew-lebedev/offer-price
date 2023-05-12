@@ -1,12 +1,12 @@
 ﻿namespace OfferPrice.Catalog.Domain;
 public interface ILikeRepository
 {
-    Task<Like> GetByProductAndUserId(string productId, string userId, CancellationToken token);
+    Task<Like> Get(string productId, string userId, CancellationToken token);
 
-    Task<long> GetCountById(string id, CancellationToken token);
+    Task<long> GetCount(string productId, CancellationToken token);
 
     Task Create(Like like, CancellationToken token);
 
-    Task Delete(string id, CancellationToken token);
+    Task Delete(string productId, string userId, CancellationToken token);
 }
 

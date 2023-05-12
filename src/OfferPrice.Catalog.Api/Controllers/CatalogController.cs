@@ -36,7 +36,7 @@ public class CatalogController : ControllerBase
 
         var pageResult = new PageResult<Models.Product>(page.Page, page.PerPage, page.TotalPages, products);
 
-        return Ok(page);
+        return Ok(pageResult);
     }
 
     [HttpGet("{id}")]
@@ -62,7 +62,6 @@ public class CatalogController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct([FromRoute] string id, [FromBody] UpdateProductRequest productRequest, CancellationToken token)
     {
-
         var product = await _products.GetById(id, token);
 
         if (product == null)
