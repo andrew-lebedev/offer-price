@@ -8,11 +8,12 @@ public class Bet
     {
         Id = bet.Id;
         User = bet.User;
-        Price = bet.Price;
+        Raise = bet.Raise;
+        Timestamp = bet.Timestamp;
     }
     
     public string Id { get; set; }
     public string User { get; set; } // todo: change to user
-    public decimal Price { get; set; }
-    public DateTime Timestamp { get; set; } // todo: make mapping
+    public decimal Raise { get; set; }
+    public DateTime Timestamp { get; set; }
 }

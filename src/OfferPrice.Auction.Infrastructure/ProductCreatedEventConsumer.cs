@@ -34,7 +34,8 @@ public class ProductCreatedEventConsumer : RabbitMqConsumer<ProductCreatedEvent>
         
         lot = new Lot
         {
-            Product = new Domain.Product(message.Product)
+            Product = new Domain.Product(message.Product),
+            Price = message.Product.Price
         };
         await _lotRepository.Create(lot, cancellationToken);
         
