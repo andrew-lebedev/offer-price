@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.SignalR;
 using OfferPrice.Auction.Api.ConnectionMapping;
 using OfferPrice.Auction.Domain;
 using SignalRSwaggerGen.Attributes;
+using System;
+using System.Threading.Tasks;
 
 namespace OfferPrice.Auction.Api.Hubs;
 
@@ -29,15 +31,15 @@ public class AuctionHub : Hub
 
         var betResponse = _mapper.Map<Models.Bet>(bet);
 
-        var connections = _connectionsMapper.GetAuctionConnections(betResponse.Auction.Id);
-
-        if (connections != null)
-        {
-            foreach (var connection in connections)
-            {
-                await Clients.Client(connection).SendAsync("raise_bet", betResponse);
-            }
-        }
+        // var connections = _connectionsMapper.GetAuctionConnections(betResponse.Lot.Id);
+        //
+        // if (connections != null)
+        // {
+        //     foreach (var connection in connections)
+        //     {
+        //         await Clients.Client(connection).SendAsync("raise_bet", betResponse);
+        //     }
+        // }
 
 
     }

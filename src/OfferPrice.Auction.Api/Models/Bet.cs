@@ -1,15 +1,18 @@
-﻿using OfferPrice.Auction.Domain;
+﻿using System;
 
-namespace OfferPrice.Auction.Api.Models
+namespace OfferPrice.Auction.Api.Models;
+
+public class Bet
 {
-    public class Bet
+    public Bet(Domain.Bet bet)
     {
-        public int Id { get; set; }
-
-        public User User { get; set; }
-
-        public Models.Auction Auction { get; set; }
-
-        public decimal Price { get; set; }
+        Id = bet.Id;
+        User = bet.User;
+        Price = bet.Price;
     }
+    
+    public string Id { get; set; }
+    public string User { get; set; } // todo: change to user
+    public decimal Price { get; set; }
+    public DateTime Timestamp { get; set; } // todo: make mapping
 }

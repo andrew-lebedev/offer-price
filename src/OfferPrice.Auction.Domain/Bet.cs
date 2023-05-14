@@ -5,9 +5,9 @@ public class Bet
 {
     public string Id { get; set; }
 
-    public User User { get; set; }
+    public string User { get; set; } // todo change to user
 
-    public Auction Auction { get; set; }
+    public Lot Lot { get; set; }
 
     public decimal Price { get; set; }
 }

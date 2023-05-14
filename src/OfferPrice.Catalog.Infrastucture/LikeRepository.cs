@@ -27,14 +27,14 @@ public class LikeRepository : ILikeRepository
     {
         var filter = Builders<Like>.Filter.Eq(x => x.UserId, userId)
                      & Builders<Like>.Filter.Eq(x => x.ProductId, productId);
-        return _likes.DeleteOneAsync( filter, cancellationToken: token);
+        return _likes.DeleteOneAsync(filter, cancellationToken: token);
     }
 
     public Task<Like> Get(string productId, string userId, CancellationToken token)
     {
         return _likes.Find(
             Builders<Like>.Filter.Where(x => x.UserId == userId && x.ProductId == productId)
-        ).SingleOrDefaultAsync(token);
+        ).FirstOrDefaultAsync(token);
     }
 
     public Task<long> GetCount(string productId, CancellationToken token)

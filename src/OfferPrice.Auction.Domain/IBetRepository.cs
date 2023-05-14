@@ -1,4 +1,6 @@
-﻿namespace OfferPrice.Auction.Domain;
+﻿using System.Threading.Tasks;
+
+namespace OfferPrice.Auction.Domain;
 public interface IBetRepository
 {
     Task GetForAuction(string auctionId);

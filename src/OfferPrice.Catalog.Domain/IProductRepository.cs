@@ -1,4 +1,6 @@
-﻿namespace OfferPrice.Catalog.Domain;
+﻿using OfferPrice.Common;
+
+namespace OfferPrice.Catalog.Domain;
 public interface IProductRepository
 {
     Task<PageResult<Product>> Get(string name, string username, string category, int page, int perPage, CancellationToken token);

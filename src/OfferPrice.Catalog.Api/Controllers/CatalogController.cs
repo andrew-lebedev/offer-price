@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Catalog.Api.Models;
 using OfferPrice.Catalog.Domain;
+using OfferPrice.Common;
+using OfferPrice.Events;
 
 namespace OfferPrice.Catalog.Api.Controllers;
 
@@ -10,11 +12,13 @@ namespace OfferPrice.Catalog.Api.Controllers;
 public class CatalogController : ControllerBase
 {
     private readonly IProductRepository _products;
+    private readonly IProducer _producer;
     private readonly IMapper _mapper;
 
-    public CatalogController(IProductRepository products, IMapper mapper)
+    public CatalogController(IProductRepository products, IProducer producer, IMapper mapper)
     {
         _products = products;
+        _producer = producer;
         _mapper = mapper;
     }
 
@@ -34,7 +38,7 @@ public class CatalogController : ControllerBase
 
         var products = page.Items.Select(_mapper.Map<Domain.Product, Models.Product>).ToList();
 
-        var pageResult = new PageResult<Models.Product>(page.Page, page.PerPage, page.TotalPages, products);
+        var pageResult = new PageResult<Models.Product>(page.Page, page.PerPage, page.Total, products);
 
         return Ok(pageResult);
     }
@@ -50,11 +54,13 @@ public class CatalogController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> InsertProduct([FromBody] InsertProductRequest productRequest, CancellationToken token)
+    public async Task<IActionResult> CreateProduct([FromBody] InsertProductRequest productRequest, CancellationToken token)
     {
         var product = _mapper.Map<InsertProductRequest, Domain.Product>(productRequest);
 
         await _products.Insert(product, token);
+        
+        _producer.SendMessage(new ProductCreatedEvent(product.ToEvent()));
 
         return Ok();
     }
