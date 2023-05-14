@@ -1,22 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace OfferPrice.Profile.Api.Models;
-public class UserRequest
+public class CreateUserRequest
 {
     [Required]
+    public string Id { get; set; } // todo: remove when custom authorization appears
     public string Name { get; set; }
-    
-    [Required]
-    public string Surname { get; set; }
-
-    public string Middlename { get; set; }
-
-    [Required]
-    [EmailAddress]
+    public string LastName { get; set; }
+    public string MiddleName { get; set; }
     public string Email { get; set; }
-
-    [Required]
-    [Phone]
     public string Phone { get; set; }
 }
 

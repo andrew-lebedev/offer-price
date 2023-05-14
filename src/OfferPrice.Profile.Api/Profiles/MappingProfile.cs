@@ -5,9 +5,10 @@ public class MappingProfile : AutoMapper.Profile
 {
     public MappingProfile()
     {
-        CreateMap<UserRequest, Domain.User>();
+        CreateMap<CreateUserRequest, Domain.User>();
+        CreateMap<UpdateUserRequest, Domain.User>();
 
-        CreateMap<Domain.User, Models.User>();
+        CreateMap<Domain.User, User>();
     }
 }
 
