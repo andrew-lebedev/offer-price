@@ -17,20 +17,10 @@ public class ProfileController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetUsers(CancellationToken token)
-    {
-        var users = await _users.Get(token);
-
-        var userResponse = users.Select(_mapper.Map<Models.User>);
-
-        return Ok(userResponse);
-    }
-
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById([FromRoute] string id, CancellationToken token)
+    public async Task<IActionResult> Get([FromRoute] string id, CancellationToken token)
     {
-        var user = await _users.GetById(id, token);
+        var user = await _users.Get(id, token);
 
         if (user == null)
         {
@@ -43,11 +33,11 @@ public class ProfileController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> InsertUser([FromBody] UserRequest userRequest, CancellationToken token)
+    public async Task<IActionResult> Create([FromBody] CreateUserRequest createUserRequest, CancellationToken token)
     {
-        var user = _mapper.Map<Domain.User>(userRequest);
+        var user = _mapper.Map<Domain.User>(createUserRequest);
 
-        await _users.Insert(user, token);
+        await _users.Create(user, token);
 
         var userResponse = _mapper.Map<Models.User>(user);
 
@@ -55,33 +45,17 @@ public class ProfileController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UserRequest userRequest, CancellationToken token)
+    public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdateUserRequest updateUserRequest, CancellationToken token)
     {
-        var user = await _users.GetById(id, token);
+        var user = await _users.Get(id, token);
 
         if (user == null)
         {
             return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
         }
 
-        var userUpdated = _mapper.Map<Domain.User>(userRequest);
-
-        await _users.Update(userUpdated, token);
-
-        return Ok();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser([FromRoute] string id, CancellationToken token)
-    {
-        var user = _users.GetById(id, token);
-
-        if (user == null)
-        {
-            return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
-        }
-
-        await _users.Delete(id, token);
+        var update = _mapper.Map(updateUserRequest, user);
+        await _users.Update(update, token);
 
         return Ok();
     }
