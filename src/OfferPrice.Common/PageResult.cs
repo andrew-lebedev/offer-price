@@ -1,19 +1,19 @@
-﻿namespace OfferPrice.Catalog.Domain;
+﻿namespace OfferPrice.Common;
 public class PageResult<T>
 {
     public int Page { get; set; }
 
     public int PerPage { get; set; }
 
-    public long TotalPages { get; set; }
+    public long Total { get; set; }
 
     public List<T> Items { get; set; }
 
-    public PageResult(int page, int perPage, long totalPages, List<T> items)
+    public PageResult(int page, int perPage, long total, List<T> items)
     {
         Page = page;
         PerPage = perPage;
-        TotalPages = totalPages;
+        Total = total;
         Items = items;
     }
 }

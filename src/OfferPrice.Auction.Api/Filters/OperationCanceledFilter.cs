@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System;
 
 namespace OfferPrice.Auction.Api.Filters;
 public class OperationCanceledFilter : IExceptionFilter

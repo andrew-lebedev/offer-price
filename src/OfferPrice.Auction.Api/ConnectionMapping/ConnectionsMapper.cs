@@ -1,4 +1,6 @@
-﻿namespace OfferPrice.Auction.Api.ConnectionMapping;
+﻿using System.Collections.Generic;
+
+namespace OfferPrice.Auction.Api.ConnectionMapping;
 public class ConnectionsMapper<T>
 {
     private readonly Dictionary<T, HashSet<string>> _connections = new Dictionary<T, HashSet<string>>();

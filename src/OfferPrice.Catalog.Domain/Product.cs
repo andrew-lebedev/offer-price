@@ -24,5 +24,18 @@ public class Product
     public decimal Price { get; set; }
 
     public string Status { get; set; }
+
+    public Events.Product ToEvent()
+    {
+        return new()
+        {
+            Id = Id,
+            Name = Name,
+            Brand = Brand,
+            Image = Image,
+            Price = Price,
+            User = User
+        };
+    }
 }
 

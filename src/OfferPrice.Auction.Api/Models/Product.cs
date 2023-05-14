@@ -1,11 +1,8 @@
-﻿namespace OfferPrice.Auction.Domain;
+namespace OfferPrice.Auction.Api.Models;
+
 public class Product
 {
-    public Product()
-    {
-    }
-
-    public Product(Events.Product product)
+    public Product(Domain.Product product)
     {
         Id = product.Id;
         Name = product.Name;
@@ -22,4 +19,3 @@ public class Product
     public string Brand { get; set; }
     public decimal Price { get; set; }
 }
-
