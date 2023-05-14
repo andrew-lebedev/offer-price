@@ -7,15 +7,13 @@ public class Product
         Id = product.Id;
         Name = product.Name;
         Image = product.Image;
-        User = product.User;
+        UserId = product.UserId;
         Brand = product.Brand;
-        Price = product.Price;
     }
     
     public string Id { get; set; }
     public string Name { get; set; }
     public string Image { get; set; }
-    public string User { get; set; }
+    public string UserId { get; set; }
     public string Brand { get; set; }
-    public decimal Price { get; set; }
 }

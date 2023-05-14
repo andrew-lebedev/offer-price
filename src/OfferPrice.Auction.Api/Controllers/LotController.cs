@@ -22,7 +22,7 @@ public class LotController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(FindLotsRequest request, CancellationToken token)
+    public async Task<IActionResult> Get([FromQuery] FindLotsRequest request, CancellationToken token)
     {
         var result = await _lots.Find(request.ToQuery(), token);
 
@@ -43,7 +43,7 @@ public class LotController : ControllerBase
     }
 
     [HttpPost("{id}/schedule")]
-    public async Task<IActionResult> Schedule(string id, [FromBody] DateTime date, CancellationToken cancellationToken)
+    public async Task<IActionResult> Schedule(string id, [FromBody] ScheduleLotRequest request, CancellationToken cancellationToken)
     {
         var lot = await _lots.Get(id, cancellationToken);
         if (lot == null)
@@ -51,7 +51,12 @@ public class LotController : ControllerBase
             return NotFound();
         }
 
-        lot.Schedule(date);
+        if (lot.Product.UserId != request.UserId)
+        {
+            return Conflict();
+        }
+
+        lot.Schedule(request.Start);
         await _lots.Update(lot, cancellationToken);
 
         return Ok();

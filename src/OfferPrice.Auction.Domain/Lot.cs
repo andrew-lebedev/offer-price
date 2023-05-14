@@ -8,6 +8,7 @@ public class Lot
     {
         Id = Guid.NewGuid().ToString();
         BetHistory = new List<Bet>();
+        Status = "Created"; // todo: to const
     }
 
     public string Id { get; set; }
@@ -15,6 +16,8 @@ public class Lot
     public Product Product { get; set; }
 
     public string Winner { get; set; } // todo: change to user
+    
+    public decimal Price { get; set; }
 
     public string Status { get; set; }
 

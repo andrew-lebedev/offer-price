@@ -14,8 +14,9 @@ public class LotRepository : ILotRepository
     {
         _lots = database.GetCollection<Lot>("lots");
         _lots.Indexes.CreateOne(new CreateIndexModel<Lot>(
-            Builders<Lot>.IndexKeys.Ascending(l => l.Product.Id)
-        ) { Options = { Unique = true } });
+            Builders<Lot>.IndexKeys.Ascending(l => l.Product.Id),
+            new CreateIndexOptions { Unique = true }
+        ));
     }
 
     public Task Create(Lot lot, CancellationToken token)
@@ -40,7 +41,13 @@ public class LotRepository : ILotRepository
 
     public async Task<PageResult<Lot>> Find(FindLotsQuery query, CancellationToken token)
     {
-        var filter = Builders<Lot>.Filter.Empty;
+        var ownerFilter = string.IsNullOrWhiteSpace(query.ProductOwnerId)
+            ? Builders<Lot>.Filter.Empty
+            : Builders<Lot>.Filter.Eq(l => l.Product.UserId, query.ProductOwnerId);
+        var statusesFilter = query.Statuses.Length == 0
+            ? Builders<Lot>.Filter.Empty
+            : Builders<Lot>.Filter.In(l => l.Status, query.Statuses);
+        var filter = Builders<Lot>.Filter.And(ownerFilter, statusesFilter);
 
         var totalTask = _lots.CountDocumentsAsync(filter, cancellationToken: token);
         var lotsTask = _lots.Find(filter)
