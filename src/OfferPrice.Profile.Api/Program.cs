@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using OfferPrice.Events.RabbitMq;
 using OfferPrice.Profile.Api;
 using OfferPrice.Profile.Api.Filters;
 using OfferPrice.Profile.Domain;
@@ -16,6 +17,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddSingleton(_ => new MongoClient(settings.Database.ConnectionString).GetDatabase(settings.Database.DatabaseName));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddRabbitMqProducer(settings.RabbitMq);
 
 builder.Services.AddProblemDetails();
 builder.Services.AddScoped<OperationCanceledFilter>();

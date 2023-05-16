@@ -1,4 +1,4 @@
-﻿namespace OfferPrice.Auction.Api;
+﻿namespace OfferPrice.Auction.Infrastructure;
 public class DatabaseSettings
 {
     public string ConnectionString { get; set; }

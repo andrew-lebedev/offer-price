@@ -6,14 +6,12 @@ public class Bet
 {
     public Bet(Domain.Bet bet)
     {
-        Id = bet.Id;
-        User = bet.User;
+        User = User.FromDomain(bet.User);
         Raise = bet.Raise;
         Timestamp = bet.Timestamp;
     }
-    
-    public string Id { get; set; }
-    public string User { get; set; } // todo: change to user
+
+    public User User { get; set; }
     public decimal Raise { get; set; }
     public DateTime Timestamp { get; set; }
 }

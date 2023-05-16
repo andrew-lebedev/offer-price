@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using OfferPrice.Events;
 using OfferPrice.Profile.Api.Models;
 using OfferPrice.Profile.Domain;
 
@@ -10,10 +11,12 @@ namespace OfferPrice.Profile.Api.Controllers;
 public class ProfileController : ControllerBase
 {
     private readonly IUserRepository _users;
+    private readonly IProducer _producer;
     private readonly IMapper _mapper;
-    public ProfileController(IUserRepository users, IMapper mapper)
+    public ProfileController(IUserRepository users, IProducer producer, IMapper mapper)
     {
         _users = users;
+        _producer = producer;
         _mapper = mapper;
     }
 
@@ -38,6 +41,8 @@ public class ProfileController : ControllerBase
         var user = _mapper.Map<Domain.User>(createUserRequest);
 
         await _users.Create(user, token);
+        
+        _producer.SendMessage(new UserCreatedEvent(user.ToEvent()));
 
         var userResponse = _mapper.Map<Models.User>(user);
 

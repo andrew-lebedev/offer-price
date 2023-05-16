@@ -10,7 +10,7 @@ public class Lot
     {
         Id = lot.Id;
         Product = new Product(lot.Product);
-        Winner = lot.Winner;
+        Winner = User.FromDomain(lot.Winner);
         BetHistory = lot.BetHistory.Select(x => new Bet(x)).ToList();
         Price = lot.Price;
         Status = lot.Status;
@@ -20,7 +20,7 @@ public class Lot
     
     public string Id { get; set; }
     public Product Product { get; set; }
-    public string Winner { get; set; } // todo: change to entity
+    public User Winner { get; set; }
     public List<Bet> BetHistory { get; set; }
     public decimal Price { get; set; }
     public string Status { get; set; }

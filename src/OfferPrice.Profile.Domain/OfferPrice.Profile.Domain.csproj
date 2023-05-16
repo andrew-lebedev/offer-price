@@ -5,4 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OfferPrice.Events\OfferPrice.Events.csproj" />
+  </ItemGroup>
+
 </Project>

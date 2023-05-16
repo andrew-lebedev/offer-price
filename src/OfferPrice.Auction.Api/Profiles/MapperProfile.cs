@@ -7,13 +7,10 @@ namespace OfferPrice.Auction.Api.Profiles
     {
         public MapperProfile()
         {
-            CreateMap<AuctionRequest, Domain.Lot>();
 
-            CreateMap<Domain.Lot, Models.Lot>();
+            CreateMap<Domain.Lot, Lot>();
 
-            CreateMap<BetRequest, Domain.Bet>();
-
-            CreateMap<Domain.Bet, Models.Bet>();
+            CreateMap<Domain.Bet, Bet>();
         }
     }
 }

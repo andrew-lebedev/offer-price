@@ -20,5 +20,18 @@ public class User
     public string Phone { get; set; }
 
     public List<Role> Role { get; set; }
+
+    public Events.User ToEvent()
+    {
+        return new()
+        {
+            Id = Id,
+            Name = Name,
+            LastName = LastName,
+            MiddleName = MiddleName,
+            Email = Email,
+            Phone = Phone
+        };
+    }
 }
 

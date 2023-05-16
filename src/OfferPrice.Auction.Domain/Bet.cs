@@ -4,9 +4,18 @@ namespace OfferPrice.Auction.Domain;
 
 public class Bet
 {
-    public string Id { get; set; }
-
-    public string User { get; set; } // todo change to user
+    public Bet()
+    {
+    }
+    
+    public Bet(User user, decimal raise)
+    {
+        User = user;
+        Raise = raise;
+        Timestamp = DateTime.UtcNow;
+    }
+    
+    public User User { get; set; }
 
     public decimal Raise { get; set; }
     

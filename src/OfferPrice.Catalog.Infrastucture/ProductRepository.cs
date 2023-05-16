@@ -25,8 +25,9 @@ public class ProductRepository : IProductRepository
         var filterByCategory = !string.IsNullOrWhiteSpace(category)
             ? Builders<Product>.Filter.Eq(x => x.Category, category)
             : Builders<Product>.Filter.Empty;
+        var filterByStatus = Builders<Product>.Filter.Ne(x => x.Status, ProductStatus.PlayedOut);
 
-        var filter = Builders<Product>.Filter.And(filterByName, filterByUsername, filterByCategory);
+        var filter = Builders<Product>.Filter.And(filterByName, filterByUsername, filterByCategory, filterByStatus);
 
         var totalTask = _products.CountDocumentsAsync(filter, cancellationToken: token);
         var productsTask = _products.Find(filter)

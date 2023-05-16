@@ -2,24 +2,25 @@ using Microsoft.Extensions.Logging;
 using OfferPrice.Auction.Domain;
 using OfferPrice.Events;
 using OfferPrice.Events.RabbitMq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OfferPrice.Auction.Infrastructure;
 
 public class ProductCreatedEventConsumer : RabbitMqConsumer<ProductCreatedEvent>
 {
     private readonly ILotRepository _lotRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ILogger<ProductCreatedEventConsumer> _logger;
 
     public ProductCreatedEventConsumer(
         ILotRepository lotRepository,
+        IUserRepository userRepository,
         IQueueResolver queueResolver,
         RabbitMqSettings settings,
         ILogger<ProductCreatedEventConsumer> logger
     ) : base(queueResolver, settings, logger)
     {
         _lotRepository = lotRepository;
+        _userRepository = userRepository;
         _logger = logger;
     }
 
@@ -31,10 +32,17 @@ public class ProductCreatedEventConsumer : RabbitMqConsumer<ProductCreatedEvent>
             _logger.LogInformation("Lot {lot_id} is already exists for product {product_id}", lot.Id, lot.Product.Id);
             return;
         }
+
+        var user = await _userRepository.Get(message.Product.User, cancellationToken);
+        if (user == null)
+        {
+            _logger.LogError("User {user_id} not found", message.Product.User);
+            throw new Exception($"User {message.Product.User} not found");
+        }
         
         lot = new Lot
         {
-            Product = new Domain.Product(message.Product),
+            Product = new Domain.Product(message.Product, user),
             Price = message.Product.Price
         };
         await _lotRepository.Create(lot, cancellationToken);

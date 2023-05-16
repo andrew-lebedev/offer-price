@@ -7,13 +7,13 @@ public class Product
         Id = product.Id;
         Name = product.Name;
         Image = product.Image;
-        UserId = product.UserId;
+        User = User.FromDomain(product.User);
         Brand = product.Brand;
     }
     
     public string Id { get; set; }
     public string Name { get; set; }
     public string Image { get; set; }
-    public string UserId { get; set; }
+    public User User { get; set; }
     public string Brand { get; set; }
 }

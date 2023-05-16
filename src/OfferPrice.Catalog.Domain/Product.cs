@@ -4,7 +4,7 @@ public class Product
     public Product()
     {
         Id = Guid.NewGuid().ToString();
-        Status = "hidden";
+        Status = ProductStatus.Created;
     }
 
     public string Id { get; set; }

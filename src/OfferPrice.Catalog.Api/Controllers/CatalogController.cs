@@ -80,53 +80,5 @@ public class CatalogController : ControllerBase
         await _products.Update(updatedProduct, token);
         return Ok();
     }
-
-    [HttpPost("{id}/hide")]
-    public async Task<IActionResult> HideProduct([FromRoute] string id, CancellationToken token)
-    {
-        var product = await _products.GetById(id, token);
-
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        if (product.Status == "hidden")
-        {
-            return Conflict();
-        }
-        else
-        {
-            product.Status = "hidden";
-        }
-
-        await _products.Update(product, token);
-
-        return Ok();
-    }
-
-    [HttpPost("{id}/show")]
-    public async Task<IActionResult> ShowProduct([FromRoute] string id, CancellationToken token)
-    {
-        var product = await _products.GetById(id, token);
-
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        if (product.Status == "observable")
-        {
-            return Conflict();
-        }
-        else
-        {
-            product.Status = "observable";
-        }
-
-        await _products.Update(product, token);
-
-        return Ok();
-    }
 }
 

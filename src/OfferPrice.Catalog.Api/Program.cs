@@ -3,6 +3,7 @@ using OfferPrice.Catalog.Api;
 using OfferPrice.Catalog.Api.Filters;
 using OfferPrice.Catalog.Domain;
 using OfferPrice.Catalog.Infrastructure;
+using OfferPrice.Events;
 using OfferPrice.Events.RabbitMq;
 using System.Text.Json.Serialization;
 
@@ -17,10 +18,11 @@ builder.Services
     .AddSingleton(_ =>
     new MongoClient(settings.Database.ConnectionString).GetDatabase(settings.Database.Name));
 
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+builder.Services.AddSingleton<IProductRepository, ProductRepository>();
+builder.Services.AddSingleton<ILikeRepository, LikeRepository>();
 
 builder.Services.AddRabbitMqProducer(settings.RabbitMq);
+builder.Services.AddRabbitMqConsumer<LotStatusUpdatedEventConsumer>(settings.RabbitMq);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

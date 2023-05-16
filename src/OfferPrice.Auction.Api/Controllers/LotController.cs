@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Auction.Api.Models;
 using OfferPrice.Auction.Domain;
-using System;
+using OfferPrice.Common.Extensions;
+using OfferPrice.Events;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,12 +13,16 @@ namespace OfferPrice.Auction.Api.Controllers;
 public class LotController : ControllerBase
 {
     private readonly ILotRepository _lots;
+    private readonly IUserRepository _users;
+    private readonly IProducer _producer;
 
     private readonly IMapper _mapper;
 
-    public LotController(ILotRepository lots, IMapper mapper)
+    public LotController(ILotRepository lots, IUserRepository users, IProducer producer, IMapper mapper)
     {
         _lots = lots;
+        _users = users;
+        _producer = producer;
         _mapper = mapper;
     }
 
@@ -42,28 +47,9 @@ public class LotController : ControllerBase
         return Ok(_mapper.Map<Models.Lot>(lot));
     }
 
-    [HttpPost("{id}/schedule")]
-    public async Task<IActionResult> Schedule(string id, [FromBody] ScheduleLotRequest request, CancellationToken cancellationToken)
-    {
-        var lot = await _lots.Get(id, cancellationToken);
-        if (lot == null)
-        {
-            return NotFound();
-        }
 
-        if (lot.Product.UserId != request.UserId)
-        {
-            return Conflict();
-        }
-
-        lot.Schedule(request.Start);
-        await _lots.Update(lot, cancellationToken);
-
-        return Ok();
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute] string id, [FromBody] AuctionRequest auctionRequest, CancellationToken token)
+    [HttpPost("{id}/delivery")]
+    public async Task<IActionResult> Deliver([FromRoute] string id, CancellationToken token)
     {
         var lot = await _lots.Get(id, token);
 
@@ -72,8 +58,58 @@ public class LotController : ControllerBase
             return NotFound();
         }
 
-        var update = _mapper.Map(auctionRequest, lot);
-        await _lots.Update(update, token);
+        if (!lot.IsSold())
+        {
+            return Conflict();
+        }
+
+        lot.Deliver();
+        await _lots.Update(lot, token);
+
+        _producer.SendMessage(new LotStatusUpdatedEvent
+        {
+            LotId = lot.Id,
+            ProductId = lot.Product.Id,
+            Status = lot.Status
+        });
+        
+        return Ok();
+    }
+
+    [HttpPost("{id}/schedule")]
+    public async Task<IActionResult> Schedule(string id, [FromBody] ScheduleLotRequest request, CancellationToken cancellationToken)
+    {
+        var lot = await _lots.Get(id, cancellationToken);
+        if (lot == null)
+        {
+            return NotFound();
+        }
+        
+        var user = await _users.Get(request.UserId, cancellationToken);
+        if (user == null)
+        {
+            return Conflict();
+        }
+
+        if (lot.Product.User.Id != request.UserId)
+        {
+            return Conflict();
+        }
+
+        if (lot.IsStarted())
+        {
+            return Conflict(); 
+        }
+
+        lot.Schedule(request.Start.RemoveSeconds());
+        await _lots.Update(lot, cancellationToken);
+                
+        _producer.SendMessage(new LotStatusUpdatedEvent
+        {
+            LotId = lot.Id,
+            ProductId = lot.Product.Id,
+            Status = lot.Status
+        });
 
         return Ok();
     }
