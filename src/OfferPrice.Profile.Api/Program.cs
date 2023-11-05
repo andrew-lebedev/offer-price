@@ -4,14 +4,19 @@ using OfferPrice.Profile.Api;
 using OfferPrice.Profile.Api.Filters;
 using OfferPrice.Profile.Domain;
 using OfferPrice.Profile.Infrastructure;
+using OfferPrice.Common.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var config = builder.Configuration;
+
 var settings = builder.Configuration.Get<AppSettings>();
 
 builder.Services.AddSingleton(settings!);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddGatewayAuthentication();
+builder.Services.RegisterSwagger();
+builder.Services.AddVersioning(config);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -31,6 +36,8 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseAuthentication();
 
 app.MapControllers();
 
