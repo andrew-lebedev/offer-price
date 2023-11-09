@@ -9,16 +9,16 @@ using System.Text;
 
 namespace OfferPrice.Apigateway.TokenProvider;
 
-public class TokenGenerator : ITokenGenerator
+public class TokenService : ITokenService
 {
     private readonly TokenConfigOptions _tokenConfig;
 
-    public TokenGenerator(IOptions<TokenConfigOptions> tokenConfig)
+    public TokenService(IOptions<TokenConfigOptions> tokenConfig)
     {
         _tokenConfig = tokenConfig.Value;
     }
 
-    public AccessToken GenerateAccessToken(string clientId)
+    public AccessToken GenerateAccessToken(string clientId, IEnumerable<string> roles)
     {
         var tokenExpiredTime = DateTime.Now.AddMinutes(_tokenConfig.AccessTokenLifetime);
         var tokenKey = Encoding.ASCII.GetBytes(_tokenConfig.Key);
@@ -26,8 +26,13 @@ public class TokenGenerator : ITokenGenerator
 
         var claimsIdentity = new ClaimsIdentity(new List<Claim>
         {
-            new Claim("cliendId", clientId)
+            new Claim("clientId", clientId)
         });
+
+        foreach (var role in roles)
+        {
+            claimsIdentity.AddClaim(new Claim("role", role));
+        }
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(tokenKey),

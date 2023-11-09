@@ -12,7 +12,6 @@ public static class JwtExtensions
         IConfiguration configuration)
     {
         services.Configure<TokenConfigOptions>(configuration.GetSection("TokenSettings"));
-        services.Configure<JwtAuthenticationOptions>(configuration.GetSection("JwtAuthentication"));
 
         var tokenConfig = configuration.GetSection("TokenSettings").Get<TokenConfigOptions>();
 
@@ -35,7 +34,7 @@ public static class JwtExtensions
                 };
             });
 
-        services.AddSingleton<ITokenGenerator, TokenGenerator>();
+        services.AddSingleton<ITokenService, TokenService>();
     }
 }
 

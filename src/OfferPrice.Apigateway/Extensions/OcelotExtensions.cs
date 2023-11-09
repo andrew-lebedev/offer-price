@@ -22,7 +22,8 @@ public static class OcelotExtensions
 
     public static void AddOcelotWithSwaggerSupport(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOcelot(configuration).AddDelegatingHandler<TokenHandler>();
+        services.AddOcelot(configuration)
+                .AddDelegatingHandler<AuthorizationHandler>();
         services.AddSwaggerForOcelot(configuration);
     }
 }

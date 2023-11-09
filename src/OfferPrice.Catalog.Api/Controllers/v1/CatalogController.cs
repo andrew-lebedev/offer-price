@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Catalog.Api.Models;
 using OfferPrice.Catalog.Domain;
@@ -10,6 +11,7 @@ namespace OfferPrice.Catalog.Api.Controllers.v1;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/products")]
+//[Authorize]
 public class CatalogController : ControllerBase
 {
     private readonly IProductRepository _products;

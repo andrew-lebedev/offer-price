@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using OfferPrice.Apigateway.ConfigOptions;
-using OfferPrice.Apigateway.Helpers;
+using OfferPrice.Apigateway.Exceptions;
 using OfferPrice.Apigateway.Models;
 using OfferPrice.Apigateway.TokenProvider;
-using System.Linq;
-
 namespace OfferPrice.Apigateway.Controllers.v1;
 
 [ApiController]
@@ -16,37 +12,36 @@ namespace OfferPrice.Apigateway.Controllers.v1;
 public class TokenController : ControllerBase
 {
     private readonly IMemoryCache _memoryCache;
-    private readonly ITokenGenerator _tokenGenerator;
-    private readonly JwtAuthenticationOptions _authenticationOptions;
+    private readonly ITokenService _tokenGenerator;
     public TokenController(
         IMemoryCache memoryCache,
-        ITokenGenerator tokenGenerator,
-        IOptions<JwtAuthenticationOptions> options)
+        ITokenService tokenGenerator)
     {
         _memoryCache = memoryCache;
         _tokenGenerator = tokenGenerator;
-        _authenticationOptions = options.Value;
     }
 
-    [HttpGet("access")]
-    public IActionResult GetNewAccesTokenByRefreshToken()
+    [HttpPost("access")]
+    public IActionResult GetNewAccesTokenByRefreshToken([FromBody] string oldRefreshToken)
     {
-        var refreshTokenHeaderName = _authenticationOptions.RefreshTokenHeaderName;
-        if (refreshTokenHeaderName is null)
-            throw new Exception("The Apigateway was not able to get refreshToken header name from .json");
+        if (!_memoryCache.TryGetValue(oldRefreshToken, out TokenValue tokenValue))
+            return Unauthorized("RefreshToken is empty");
 
-        if (!Request.Headers.TryGetValue(refreshTokenHeaderName, out StringValues refreshTokenStringValues))
-            return Unauthorized("The refresh token was not found in 'refreshToken' http header");
+        if (tokenValue.ExpirationDateTime < DateTimeOffset.UtcNow)
+            return Unauthorized("DateTime is expired");
 
-        var refreshToken = refreshTokenStringValues.ToString();
-        if (!_memoryCache.TryGetValue(refreshToken, out string clientId))
-            return Unauthorized("The refresh token was not found in database");
-
-        var accessToken = _tokenGenerator.GenerateAccessToken(clientId);
+        var accessToken = _tokenGenerator.GenerateAccessToken(tokenValue.ClientId, tokenValue.Roles);
         if (accessToken?.Token is null)
-            throw new Exception("Access token is null");
+            throw new TokenException("Access token is null");
 
-        var result = new AuthenticationResponse(accessToken.Token, refreshToken);
+        var newRefreshToken = _tokenGenerator.GenerateRefreshToken();
+
+        var result = new AuthenticationResponse(accessToken.Token, newRefreshToken.Token);
+
+        _memoryCache.Remove(oldRefreshToken);
+
+        var newTokenValue = new TokenValue(tokenValue.ClientId, tokenValue.Roles, newRefreshToken.ExpirationDate);
+        _memoryCache.Set(newRefreshToken.Token, newTokenValue);
 
         return Ok(result);
     }

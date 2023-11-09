@@ -13,7 +13,7 @@
             ],
             "SwaggerKey": "profile",
             "DelegatingHandlers": [
-                "TokenHandler"
+                "AuthorizationHandler"
             ]
         },
         {
@@ -30,9 +30,9 @@
             "SwaggerKey": "profile"
         },
         {
-            "UpstreamPathTemplate": "/api/v1/users/{everything}",
+            "UpstreamPathTemplate": "/api/v1/users",
             "UpstreamHttpMethod": [ "Get", "Put" ],
-            "DownstreamPathTemplate": "/api/v1/users/{everything}",
+            "DownstreamPathTemplate": "/api/v1/users",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {

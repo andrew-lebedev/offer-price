@@ -1,27 +1,24 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using OfferPrice.Apigateway.ConfigOptions;
+using OfferPrice.Apigateway.Exceptions;
 using OfferPrice.Apigateway.Helpers;
+using OfferPrice.Apigateway.Models;
 using OfferPrice.Apigateway.TokenProvider;
 using System.Net;
 using System.Text.Json;
 
 namespace OfferPrice.Apigateway.OcelotHandlers;
 
-public class TokenHandler : DelegatingHandler
+public class AuthorizationHandler : DelegatingHandler
 {
-    private readonly ITokenGenerator _tokenGenerator;
-    private readonly TokenConfigOptions _tokenConfigOptions;
+    private readonly ITokenService _tokenGenerator;
     private readonly IMemoryCache _memoryCache;
 
-    public TokenHandler(
-        ITokenGenerator tokenGenerator, 
-        IMemoryCache memoryCache, 
-        IOptions<TokenConfigOptions> options)
+    public AuthorizationHandler(
+        ITokenService tokenGenerator,
+        IMemoryCache memoryCache)
     {
         _tokenGenerator = tokenGenerator;
         _memoryCache = memoryCache;
-        _tokenConfigOptions = options.Value;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -36,27 +33,30 @@ public class TokenHandler : DelegatingHandler
         var clientId = parsedContent.RootElement.GetProperty("id").GetString();
         if (clientId == null)
         {
-            throw new Exception("Client id is not found");
+            throw new TokenException("Client id is not found");
         }
 
-        var accessToken = _tokenGenerator.GenerateAccessToken(clientId);
+        var roles = parsedContent.RootElement.GetProperty("roles").Deserialize<List<string>>();
+        if (roles == null)
+        {
+            throw new TokenException("Client roles are not found");
+        }
+
+        var accessToken = _tokenGenerator.GenerateAccessToken(clientId, roles);
         if (accessToken is null)
         {
-            throw new Exception("Access token is not generated");
+            throw new TokenException("Access token is not generated");
         }
 
         var refreshToken = _tokenGenerator.GenerateRefreshToken();
         if (refreshToken is null)
         {
-            throw new Exception("Refresh token is not generated");
+            throw new TokenException("Refresh token is not generated");
         }
 
-        var refreshTokenExpiration = TimeSpan.FromMinutes(_tokenConfigOptions.RefreshTokenLifetime);
+        var tokenValue = new TokenValue(clientId, roles, refreshToken.ExpirationDate);
 
-        _memoryCache.Set(refreshToken.Token, clientId, new MemoryCacheEntryOptions()
-        {
-            AbsoluteExpirationRelativeToNow = refreshTokenExpiration
-        });
+        _memoryCache.Set(refreshToken.Token, tokenValue);
 
         return HttpResponseFactory.CreateResponseWithTokens(accessToken.Token, refreshToken.Token);
     }

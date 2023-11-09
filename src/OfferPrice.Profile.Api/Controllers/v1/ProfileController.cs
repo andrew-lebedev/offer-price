@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OfferPrice.Common;
 using OfferPrice.Events;
 using OfferPrice.Profile.Api.Models;
 using OfferPrice.Profile.Domain;
@@ -10,7 +11,6 @@ namespace OfferPrice.Profile.Api.Controllers.v1;
 [Route("api/v{version:apiVersion}/users")]
 [ApiController]
 [ApiVersion("1.0")]
-[Authorize]
 public class ProfileController : ControllerBase
 {
     private readonly IUserRepository _users;
@@ -23,10 +23,12 @@ public class ProfileController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get([FromRoute] string id, CancellationToken token)
+    [HttpGet]
+    public async Task<IActionResult> Get(CancellationToken token)
     {
-        var user = await _users.Get(id, token);
+        var clientId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
+        var user = await _users.Get(clientId, token);
 
         if (user == null)
         {
@@ -38,10 +40,12 @@ public class ProfileController : ControllerBase
         return Ok(userResponse);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdateUserRequest updateUserRequest, CancellationToken token)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateUserRequest updateUserRequest, CancellationToken token)
     {
-        var user = await _users.Get(id, token);
+        var clientId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
+        var user = await _users.Get(clientId, token);
 
         if (user == null)
         {
@@ -50,6 +54,8 @@ public class ProfileController : ControllerBase
 
         var update = _mapper.Map(updateUserRequest, user);
         await _users.Update(update, token);
+
+        _producer.SendMessage(new UserUpdatedEvent(update.ToEvent()));
 
         return Ok();
     }
