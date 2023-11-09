@@ -13,12 +13,14 @@ public class AuthController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly IProducer _producer;
 
-    public AuthController(IUserRepository userRepository, IProducer producer, IMapper mapper)
+    public AuthController(IUserRepository userRepository, IRoleRepository roleRepository, IProducer producer, IMapper mapper)
     {
         _mapper = mapper;
         _userRepository = userRepository;
+        _roleRepository = roleRepository;
         _producer = producer;
     }
 
@@ -41,6 +43,10 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Registration([FromBody] RegistrationUserRequest createUserRequest, CancellationToken token)
     {
         var user = _mapper.Map<Domain.User>(createUserRequest);
+
+        var role = await _roleRepository.GetByName("user", token);
+
+        user.Roles = new List<Role> { role };
 
         await _userRepository.Create(user, token);
 

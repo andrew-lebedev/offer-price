@@ -1,6 +1,7 @@
 using MMLib.SwaggerForOcelot.DependencyInjection;
 using Ocelot.Middleware;
 using OfferPrice.Apigateway.Extensions;
+using OfferPrice.Apigateway.Filters;
 using OfferPrice.Common.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,9 @@ builder.Services.AddVersioning(config);
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddScoped<ExceptionFilter>();
+builder.Services.AddControllers(options => options.Filters.Add<ExceptionFilter>());
+
 builder.Services.AddRouting();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -25,7 +29,8 @@ app.UseSwagger();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthentication();
+//app.UseAuthorization();
 
 app.UseEndpoints(endpoints => endpoints.MapControllers());
 

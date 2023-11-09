@@ -21,7 +21,7 @@ public class User
 
     public string PasswordHash { get; set; }
 
-    public List<Role> Role { get; set; }
+    public List<Role> Roles { get; set; }
 
     public Events.User ToEvent()
     {

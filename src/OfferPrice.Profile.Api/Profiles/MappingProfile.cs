@@ -10,7 +10,8 @@ public class MappingProfile : AutoMapper.Profile
 
         CreateMap<Domain.User, User>();
 
-        CreateMap<Domain.User, LoginUserResponse>();
+        CreateMap<Domain.User, LoginUserResponse>()
+            .ForMember(x => x.Roles, y => y.MapFrom(k => k.Roles.Select(m => m.Name)));
 
         CreateMap<RegistrationUserRequest, Domain.User>()
             .ForMember(x => x.PasswordHash, y => y.MapFrom(k => k.Password)); // TODO: remake to hash later
