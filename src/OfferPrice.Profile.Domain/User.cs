@@ -19,7 +19,9 @@ public class User
 
     public string Phone { get; set; }
 
-    public List<Role> Role { get; set; }
+    public string PasswordHash { get; set; }
+
+    public List<Role> Roles { get; set; }
 
     public Events.User ToEvent()
     {

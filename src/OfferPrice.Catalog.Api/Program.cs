@@ -3,11 +3,14 @@ using OfferPrice.Catalog.Api;
 using OfferPrice.Catalog.Api.Filters;
 using OfferPrice.Catalog.Domain;
 using OfferPrice.Catalog.Infrastructure;
-using OfferPrice.Events;
+using OfferPrice.Common.Extensions;
 using OfferPrice.Events.RabbitMq;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var config = builder.Configuration;
+
 var settings = builder.Configuration.Get<AppSettings>()!;
 
 builder.Services.AddSingleton(settings);
@@ -21,11 +24,12 @@ builder.Services
 builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 builder.Services.AddSingleton<ILikeRepository, LikeRepository>();
 
+builder.Services.AddGatewayAuthentication();
+builder.Services.RegisterSwagger();
+builder.Services.AddVersioning(config);
+
 builder.Services.AddRabbitMqProducer(settings.RabbitMq);
 builder.Services.AddRabbitMqConsumer<LotStatusUpdatedEventConsumer>(settings.RabbitMq);
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddProblemDetails();
 
@@ -44,6 +48,9 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

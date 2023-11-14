@@ -19,6 +19,12 @@ public class UserRepository : IUserRepository
                      .SingleOrDefaultAsync(token);
     }
 
+    public Task<User> GetByEmailAndPassword(string email, string password, CancellationToken token)
+    {
+        return _users.Find(Builders<User>.Filter.Where(x => x.Email == email && x.PasswordHash == password))
+                     .SingleOrDefaultAsync();
+    }
+
     public async Task Create(User user, CancellationToken token)
     {
         await _users.InsertOneAsync(user, cancellationToken: token);
