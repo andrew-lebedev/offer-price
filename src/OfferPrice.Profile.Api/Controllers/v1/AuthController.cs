@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using OfferPrice.Events;
+using OfferPrice.Events.Events;
+using OfferPrice.Events.Interfaces;
 using OfferPrice.Profile.Api.Models;
 using OfferPrice.Profile.Domain;
 

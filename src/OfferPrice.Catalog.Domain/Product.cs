@@ -25,7 +25,7 @@ public class Product
 
     public string Status { get; set; }
 
-    public Events.Product ToEvent()
+    public Events.Models.Product ToEvent()
     {
         return new()
         {

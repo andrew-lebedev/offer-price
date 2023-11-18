@@ -29,6 +29,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Common", "src\Of
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Apigateway", "src\OfferPrice.Apigateway\OfferPrice.Apigateway.csproj", "{0F5E0C40-8247-4323-B632-22BFEE362208}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Payment.Api", "src\OfferPrice.Payment.Api\OfferPrice.Payment.Api.csproj", "{C2B0BE17-6FD6-4BAA-9FDC-7871B59870DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Payment.Infrastructure", "src\OfferPrice.Payment.Infrastructure\OfferPrice.Payment.Infrastructure.csproj", "{AC964420-822F-483C-A70C-E28B32F7E9A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfferPrice.Payment.Domain", "src\OfferPrice.Payment.Domain\OfferPrice.Payment.Domain.csproj", "{CFD12CF6-902F-4328-9E8B-36E4B1A650CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,10 +89,6 @@ Global
 		{0A52A07C-E499-4F2D-8F6E-815AB2005850}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A52A07C-E499-4F2D-8F6E-815AB2005850}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A52A07C-E499-4F2D-8F6E-815AB2005850}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F5E0C40-8247-4323-B632-22BFEE362208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F5E0C40-8247-4323-B632-22BFEE362208}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F5E0C40-8247-4323-B632-22BFEE362208}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F5E0C40-8247-4323-B632-22BFEE362208}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

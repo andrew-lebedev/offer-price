@@ -5,7 +5,7 @@ public class Product
     {
     }
 
-    public Product(Events.Product product, User user)
+    public Product(Events.Models.Product product, User user)
     {
         Id = product.Id;
         Name = product.Name;

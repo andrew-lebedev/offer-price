@@ -1,4 +1,4 @@
-namespace OfferPrice.Events;
+namespace OfferPrice.Events.Interfaces;
 
 public interface IQueueResolver
 {

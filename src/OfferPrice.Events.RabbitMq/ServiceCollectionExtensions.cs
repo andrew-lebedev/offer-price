@@ -1,6 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OfferPrice.Events.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OfferPrice.Events.RabbitMq;
 
@@ -10,6 +14,7 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddSingleton(settings);
         services.TryAddSingleton<IQueueResolver, RabbitMqResolver>();
+        services.TryAddSingleton<IExchangeResolver, RabbitMqResolver>();
         services.AddSingleton<IProducer, RabbitMqProducer>();
 
         return services;
@@ -21,6 +26,7 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddSingleton(settings);
         services.TryAddSingleton<IQueueResolver, RabbitMqResolver>();
+        services.TryAddSingleton<IExchangeResolver, RabbitMqResolver>();
         services.AddSingleton<IConsumer, TConsumer>();
         
         services.TryAddConsumerService();

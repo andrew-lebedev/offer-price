@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using OfferPrice.Auction.Domain;
-using OfferPrice.Events;
+using OfferPrice.Events.Events;
+using OfferPrice.Events.Interfaces;
 using OfferPrice.Events.RabbitMq;
 
 namespace OfferPrice.Auction.Infrastructure;
@@ -13,9 +14,10 @@ public class UserCreatedEventConsumer : RabbitMqConsumer<UserCreatedEvent>
     public UserCreatedEventConsumer(
         IUserRepository userRepository,
         IQueueResolver queueResolver,
+        IExchangeResolver exchangeResolver,
         RabbitMqSettings settings,
         ILogger<UserCreatedEventConsumer> logger
-    ) : base(queueResolver, settings, logger)
+    ) : base(queueResolver,exchangeResolver, settings, logger)
     {
         _userRepository = userRepository;
         _logger = logger;
@@ -30,7 +32,7 @@ public class UserCreatedEventConsumer : RabbitMqConsumer<UserCreatedEvent>
             return;
         }
 
-        user = new Domain.User(message.User);
+        user = new User(message.User);
         await _userRepository.Create(user, cancellationToken);
         
         _logger.LogInformation("User {user} was successfully created", user);

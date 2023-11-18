@@ -1,4 +1,6 @@
-namespace OfferPrice.Events;
+using OfferPrice.Events.Models;
+
+namespace OfferPrice.Events.Events;
 
 public class ProductCreatedEvent : Event
 {
@@ -6,6 +8,6 @@ public class ProductCreatedEvent : Event
     {
         Product = product;
     }
-    
+
     public Product Product { get; set; }
 }
