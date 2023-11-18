@@ -1,4 +1,4 @@
-﻿namespace OfferPrice.Payment.Domain;
+﻿namespace OfferPrice.Payment.Domain.Models;
 
 public class Transaction
 {
@@ -14,7 +14,7 @@ public class Transaction
 
     public decimal Price { get; set; }
 
-    public DateTimeOffset Date { get; set; }
+    public DateTime Date { get; set; }
 
     public string Status { get; set; }
 }

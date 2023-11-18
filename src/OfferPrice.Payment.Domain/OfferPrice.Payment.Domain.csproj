@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OfferPrice.Common\OfferPrice.Common.csproj" />
+      <ProjectReference Include="..\OfferPrice.Events\OfferPrice.Events.csproj" />
+  </ItemGroup>
+
 </Project>

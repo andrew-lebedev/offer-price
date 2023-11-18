@@ -1,9 +1,10 @@
 using MongoDB.Driver;
 using OfferPrice.Common.Extensions;
-using OfferPrice.Payment.Api;
 using OfferPrice.Events.RabbitMq;
-using OfferPrice.Payment.Domain;
-using OfferPrice.Payment.Infrastructure;
+using OfferPrice.Payment.Domain.Interfaces;
+using OfferPrice.Payment.Infrastructure.Repositories;
+using OfferPrice.Payment.Api.Settings;
+using OfferPrice.Payment.Infrastructure.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +20,15 @@ builder.Services.AddGatewayAuthentication();
 builder.Services.RegisterSwagger();
 builder.Services.AddVersioning(config);
 
-builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddSingleton<ITransactionRepository, TransactionRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<ILotRepository, LotRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddRabbitMqProducer(settings.RabbitMq);
+
+builder.Services.AddRabbitMqConsumer<UserCreatedEventConsumer>(settings.RabbitMq);
 
 builder.Services.AddControllers();
 

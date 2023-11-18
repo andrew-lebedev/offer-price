@@ -1,6 +1,6 @@
 ﻿using OfferPrice.Events.RabbitMq;
 
-namespace OfferPrice.Payment.Api;
+namespace OfferPrice.Payment.Api.Settings;
 
 public class AppSettings
 {

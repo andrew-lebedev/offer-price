@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OfferPrice.Events.RabbitMq\OfferPrice.Events.RabbitMq.csproj" />
     <ProjectReference Include="..\OfferPrice.Payment.Domain\OfferPrice.Payment.Domain.csproj" />
   </ItemGroup>
 

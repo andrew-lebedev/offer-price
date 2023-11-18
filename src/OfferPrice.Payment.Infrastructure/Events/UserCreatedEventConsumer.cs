@@ -1,10 +1,11 @@
-using Microsoft.Extensions.Logging;
-using OfferPrice.Auction.Domain;
+﻿using Microsoft.Extensions.Logging;
 using OfferPrice.Events.Events;
 using OfferPrice.Events.Interfaces;
 using OfferPrice.Events.RabbitMq;
+using OfferPrice.Payment.Domain.Interfaces;
+using OfferPrice.Payment.Domain.Models;
 
-namespace OfferPrice.Auction.Infrastructure;
+namespace OfferPrice.Payment.Infrastructure.Events;
 
 public class UserCreatedEventConsumer : RabbitMqConsumer<UserCreatedEvent>
 {
@@ -17,7 +18,7 @@ public class UserCreatedEventConsumer : RabbitMqConsumer<UserCreatedEvent>
         IExchangeResolver exchangeResolver,
         RabbitMqSettings settings,
         ILogger<UserCreatedEventConsumer> logger
-    ) : base(queueResolver,exchangeResolver, settings, logger)
+    ) : base(queueResolver, exchangeResolver, settings, logger)
     {
         _userRepository = userRepository;
         _logger = logger;
@@ -25,7 +26,7 @@ public class UserCreatedEventConsumer : RabbitMqConsumer<UserCreatedEvent>
 
     protected override async Task Execute(UserCreatedEvent message, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.Get(message.User.Id, cancellationToken);
+        var user = await _userRepository.GetById(message.User.Id, cancellationToken);
         if (user != null)
         {
             _logger.LogInformation("User {lot_id} is already exists", user.Id);
@@ -34,7 +35,7 @@ public class UserCreatedEventConsumer : RabbitMqConsumer<UserCreatedEvent>
 
         user = new User(message.User);
         await _userRepository.Create(user, cancellationToken);
-        
+
         _logger.LogInformation("User {user} was successfully created", user);
     }
 }

@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Auction.Api.Models;
 using OfferPrice.Auction.Domain;
 using OfferPrice.Common.Extensions;
-using OfferPrice.Events;
+using OfferPrice.Events.Events;
+using OfferPrice.Events.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 

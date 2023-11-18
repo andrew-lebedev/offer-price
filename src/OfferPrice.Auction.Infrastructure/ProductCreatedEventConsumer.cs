@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using OfferPrice.Auction.Domain;
-using OfferPrice.Events;
+using OfferPrice.Events.Events;
+using OfferPrice.Events.Interfaces;
 using OfferPrice.Events.RabbitMq;
 
 namespace OfferPrice.Auction.Infrastructure;
@@ -15,9 +16,10 @@ public class ProductCreatedEventConsumer : RabbitMqConsumer<ProductCreatedEvent>
         ILotRepository lotRepository,
         IUserRepository userRepository,
         IQueueResolver queueResolver,
+        IExchangeResolver exchangeResolver,
         RabbitMqSettings settings,
         ILogger<ProductCreatedEventConsumer> logger
-    ) : base(queueResolver, settings, logger)
+    ) : base(queueResolver, exchangeResolver, settings, logger)
     {
         _lotRepository = lotRepository;
         _userRepository = userRepository;
@@ -39,14 +41,14 @@ public class ProductCreatedEventConsumer : RabbitMqConsumer<ProductCreatedEvent>
             _logger.LogError("User {user_id} not found", message.Product.User);
             throw new Exception($"User {message.Product.User} not found");
         }
-        
+
         lot = new Lot
         {
             Product = new Domain.Product(message.Product, user),
             Price = message.Product.Price
         };
         await _lotRepository.Create(lot, cancellationToken);
-        
+
         _logger.LogInformation("Lot {lot} was successfully created", lot);
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace OfferPrice.Profile.Domain;
+﻿namespace OfferPrice.Profile.Domain;
 public class User
 {
     public User()
@@ -23,7 +22,7 @@ public class User
 
     public List<Role> Roles { get; set; }
 
-    public Events.User ToEvent()
+    public Events.Models.User ToEvent()
     {
         return new()
         {

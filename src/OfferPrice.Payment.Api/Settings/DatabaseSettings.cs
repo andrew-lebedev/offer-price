@@ -1,4 +1,4 @@
-﻿namespace OfferPrice.Payment.Api;
+﻿namespace OfferPrice.Payment.Api.Settings;
 
 public class DatabaseSettings
 {

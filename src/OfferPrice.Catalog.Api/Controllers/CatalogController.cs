@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Catalog.Api.Models;
 using OfferPrice.Catalog.Domain;
 using OfferPrice.Common;
-using OfferPrice.Events;
+using OfferPrice.Events.Events;
+using OfferPrice.Events.Interfaces;
 
 namespace OfferPrice.Catalog.Api.Controllers;
 

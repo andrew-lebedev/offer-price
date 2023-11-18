@@ -7,7 +7,7 @@ public class User
     {
     }
 
-    public User(Events.User user)
+    public User(Events.Models.User user)
     {
         Id = user.Id;
         Email = user.Email;
