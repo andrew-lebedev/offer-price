@@ -4,7 +4,7 @@ namespace OfferPrice.Auction.Api.Models;
 
 public class Bet
 {
-    public Bet(Domain.Bet bet)
+    public Bet(Domain.Models.Bet bet)
     {
         User = User.FromDomain(bet.User);
         Raise = bet.Raise;

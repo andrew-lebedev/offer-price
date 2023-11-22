@@ -4,7 +4,7 @@ using OfferPrice.Events;
 using OfferPrice.Events.Events;
 using OfferPrice.Events.Interfaces;
 using OfferPrice.Profile.Api.Models;
-using OfferPrice.Profile.Domain;
+using OfferPrice.Profile.Domain.Interfaces;
 
 namespace OfferPrice.Profile.Api.Controllers;
 
@@ -40,7 +40,7 @@ public class ProfileController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest createUserRequest, CancellationToken token)
     {
-        var user = _mapper.Map<Domain.User>(createUserRequest);
+        var user = _mapper.Map<Domain.Models.User>(createUserRequest);
 
         await _users.Create(user, token);
         

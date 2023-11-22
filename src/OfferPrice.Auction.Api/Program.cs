@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using OfferPrice.Auction.Api;
+using OfferPrice.Auction.Api.Extensions;
 using OfferPrice.Auction.Api.Filters;
 using OfferPrice.Auction.Api.Hubs;
-using OfferPrice.Auction.Api.Jobs;
-using OfferPrice.Auction.Infrastructure;
+using OfferPrice.Auction.Api.Settings;
 using OfferPrice.Common.Extensions;
-using OfferPrice.Events.RabbitMq;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,9 +31,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddInfrastructure(settings.Database);
 
-builder.Services.AddRabbitMqProducer(settings.RabbitMq);
-builder.Services.AddRabbitMqConsumer<ProductCreatedEventConsumer>(settings.RabbitMq);
-builder.Services.AddRabbitMqConsumer<UserCreatedEventConsumer>(settings.RabbitMq);
+builder.Services.RegisterRabbitMq(config);
 
 builder.Services.AddSingleton<OperationCanceledFilter>();
 builder.Services.AddControllers(options =>

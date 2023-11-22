@@ -1,4 +1,4 @@
-﻿using OfferPrice.Events.RabbitMq;
+﻿using OfferPrice.Events.RabbitMq.Options;
 
 namespace OfferPrice.Payment.Api.Settings;
 

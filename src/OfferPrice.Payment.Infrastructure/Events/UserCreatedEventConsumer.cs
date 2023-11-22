@@ -2,6 +2,7 @@
 using OfferPrice.Events.Events;
 using OfferPrice.Events.Interfaces;
 using OfferPrice.Events.RabbitMq;
+using OfferPrice.Events.RabbitMq.Options;
 using OfferPrice.Payment.Domain.Interfaces;
 using OfferPrice.Payment.Domain.Models;
 
@@ -14,11 +15,9 @@ public class UserCreatedEventConsumer : RabbitMqConsumer<UserCreatedEvent>
 
     public UserCreatedEventConsumer(
         IUserRepository userRepository,
-        IQueueResolver queueResolver,
-        IExchangeResolver exchangeResolver,
-        RabbitMqSettings settings,
+        IEventResolver eventResolver,
         ILogger<UserCreatedEventConsumer> logger
-    ) : base(queueResolver, exchangeResolver, settings, logger)
+    ) : base(eventResolver, logger)
     {
         _userRepository = userRepository;
         _logger = logger;

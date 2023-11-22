@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using OfferPrice.Auction.Api.Jobs;
 using OfferPrice.Auction.Api.Models;
-using OfferPrice.Auction.Domain;
+using OfferPrice.Auction.Api.Settings;
+using OfferPrice.Auction.Domain.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

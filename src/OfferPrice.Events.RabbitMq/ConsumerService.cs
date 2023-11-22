@@ -8,8 +8,12 @@ namespace OfferPrice.Events.RabbitMq;
 
 public class ConsumerService : BackgroundService
 {
-    public ConsumerService(IEnumerable<IConsumer> _)
+    public ConsumerService(IEnumerable<IConsumer> consumers)
     {
+        foreach (var consumer in consumers)
+        {
+            consumer.Consume();
+        }
     }
     
     protected override Task ExecuteAsync(CancellationToken stoppingToken)

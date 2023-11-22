@@ -2,7 +2,7 @@ namespace OfferPrice.Auction.Api.Models;
 
 public class Product
 {
-    public Product(Domain.Product product)
+    public Product(Domain.Models.Product product)
     {
         Id = product.Id;
         Name = product.Name;

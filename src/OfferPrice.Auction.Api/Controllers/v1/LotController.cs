@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Auction.Api.Models;
-using OfferPrice.Auction.Domain;
+using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Common.Extensions;
 using OfferPrice.Events.Events;
 using OfferPrice.Events.Interfaces;
