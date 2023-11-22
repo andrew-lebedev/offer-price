@@ -6,7 +6,7 @@ namespace OfferPrice.Auction.Api.Models;
 
 public class FindLotsResponse
 {
-    public FindLotsResponse(PageResult<Domain.Lot> pageResult)
+    public FindLotsResponse(PageResult<Domain.Models.Lot> pageResult)
     {
         Lots = pageResult.Items.Select(x => new Lot(x)).ToList();
         Total = pageResult.Total;

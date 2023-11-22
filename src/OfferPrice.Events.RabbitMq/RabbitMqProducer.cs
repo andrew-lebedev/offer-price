@@ -1,4 +1,5 @@
 using OfferPrice.Events.Interfaces;
+using OfferPrice.Events.RabbitMq.Options;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
@@ -7,8 +8,7 @@ namespace OfferPrice.Events.RabbitMq;
 
 public class RabbitMqProducer : IProducer
 {
-    private readonly IQueueResolver _queueResolver;
-    private readonly IExchangeResolver _exchangeResolver;
+    private readonly IEventResolver _eventResolver;
     private readonly RabbitMqSettings _settings;
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
@@ -16,11 +16,10 @@ public class RabbitMqProducer : IProducer
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public RabbitMqProducer(IQueueResolver queueResolver, IExchangeResolver exchangeResolver, RabbitMqSettings settings)
+    public RabbitMqProducer(IEventResolver eventResolver, RabbitMqSettings settings)
     {
-        _queueResolver = queueResolver;
+        _eventResolver = eventResolver;
         _settings = settings;
-        _exchangeResolver = exchangeResolver;
     }
 
     public void SendMessage<T>(T message) where T : Event
@@ -29,26 +28,19 @@ public class RabbitMqProducer : IProducer
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
 
-        var exhange = _exchangeResolver.GetExchange<T>();
+        var eventSettings = _eventResolver.Resolve<T>();
 
-        channel.ExchangeDeclare(exhange, ExchangeType.Direct);
+        var exchange = eventSettings.Exchange;
+        var key = eventSettings.Key;
 
-        var queue = _queueResolver.Get<T>();
-
-        //channel.QueueDeclare(
-        //    queue: queue,
-        //    durable: true,
-        //    exclusive: false,
-        //    autoDelete: false,
-        //    arguments: null
-        //);
+        channel.ExchangeDeclare(exchange, ExchangeType.Direct);
 
         var json = JsonSerializer.Serialize(message, _jsonSerializerOptions);
         var body = Encoding.UTF8.GetBytes(json);
 
         channel.BasicPublish(
-            exchange: exhange,
-            routingKey: queue,
+            exchange: exchange,
+            routingKey: key,
             basicProperties: null,
             body: body
         );

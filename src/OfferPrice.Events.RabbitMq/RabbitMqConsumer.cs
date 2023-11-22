@@ -15,7 +15,9 @@ public abstract class RabbitMqConsumer<T> : IConsumer where T : Event
     private readonly IConnection _connection;
     private readonly IModel _channel;
 
+    private readonly IEventResolver _eventResolver;
     private readonly ILogger<RabbitMqConsumer<T>> _logger;
+
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         WriteIndented = true,
@@ -23,32 +25,33 @@ public abstract class RabbitMqConsumer<T> : IConsumer where T : Event
     };
 
     protected RabbitMqConsumer(
-        IQueueResolver queueResolver,
-        IExchangeResolver exchangeResolver,
-        RabbitMqSettings settings,
+        IEventResolver eventResolver,
         ILogger<RabbitMqConsumer<T>> logger)
     {
         _logger = logger;
 
         var factory = new ConnectionFactory { HostName = "localhost" };
+
+        _eventResolver = eventResolver;
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
+    }
 
-        var exchange = exchangeResolver.GetExchange<T>();
+    public void Consume(CancellationToken cancellationToken = default)
+    {
+        var eventSettings = _eventResolver.Resolve<T>();
+
+        var exchange = eventSettings.Exchange;
+        var routingKey = eventSettings.Key;
 
         _channel.ExchangeDeclare(exchange, type: ExchangeType.Direct);
 
         var queue = _channel.QueueDeclare().QueueName;
 
-        var routingKey = queueResolver.Get<T>();
-
         _channel.QueueBind(queue, exchange, routingKey);
 
-        //_channel.QueueDeclare(queue: queue, durable: true, exclusive: false, autoDelete: false, arguments: null);
-
-        //_channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-
         var consumer = new EventingBasicConsumer(_channel);
+
         consumer.Received += async (_, eventArgs) =>
         {
             var json = Encoding.UTF8.GetString(eventArgs.Body.ToArray());

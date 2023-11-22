@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Events.Events;
 using OfferPrice.Events.Interfaces;
 using OfferPrice.Profile.Api.Models;
-using OfferPrice.Profile.Domain;
+using OfferPrice.Profile.Domain.Interfaces;
+using OfferPrice.Profile.Domain.Models;
 
 namespace OfferPrice.Profile.Api.Controllers.v1;
 
@@ -43,7 +44,7 @@ public class AuthController : ControllerBase
     [HttpPost("registration")]
     public async Task<IActionResult> Registration([FromBody] RegistrationUserRequest createUserRequest, CancellationToken token)
     {
-        var user = _mapper.Map<Domain.User>(createUserRequest);
+        var user = _mapper.Map<Domain.Models.User>(createUserRequest);
 
         var role = await _roleRepository.GetByName("user", token);
 

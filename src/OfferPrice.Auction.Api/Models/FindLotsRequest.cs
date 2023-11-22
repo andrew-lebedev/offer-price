@@ -1,4 +1,4 @@
-using OfferPrice.Auction.Domain;
+using OfferPrice.Auction.Domain.Queries;
 using OfferPrice.Common;
 using System;
 

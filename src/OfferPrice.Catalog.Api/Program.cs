@@ -1,10 +1,7 @@
-using MongoDB.Driver;
-using OfferPrice.Catalog.Api;
+using OfferPrice.Catalog.Api.Extensions;
 using OfferPrice.Catalog.Api.Filters;
-using OfferPrice.Catalog.Domain;
-using OfferPrice.Catalog.Infrastructure;
+using OfferPrice.Catalog.Api.Settings;
 using OfferPrice.Common.Extensions;
-using OfferPrice.Events.RabbitMq;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,19 +14,12 @@ builder.Services.AddSingleton(settings);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services
-    .AddSingleton(_ =>
-    new MongoClient(settings.Database.ConnectionString).GetDatabase(settings.Database.Name));
-
-builder.Services.AddSingleton<IProductRepository, ProductRepository>();
-builder.Services.AddSingleton<ILikeRepository, LikeRepository>();
-
 builder.Services.AddGatewayAuthentication();
 builder.Services.RegisterSwagger();
 builder.Services.AddVersioning(config);
 
-builder.Services.AddRabbitMqProducer(settings.RabbitMq);
-builder.Services.AddRabbitMqConsumer<LotStatusUpdatedEventConsumer>(settings.RabbitMq);
+builder.Services.RegisterInfrastructure(settings.Database);
+builder.Services.RegisterRabbitMq(settings.RabbitMq);
 
 builder.Services.AddProblemDetails();
 

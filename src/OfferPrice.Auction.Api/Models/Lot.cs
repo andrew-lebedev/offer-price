@@ -6,7 +6,7 @@ namespace OfferPrice.Auction.Api.Models;
 
 public class Lot
 {
-    public Lot(Domain.Lot lot)
+    public Lot(Domain.Models.Lot lot)
     {
         Id = lot.Id;
         Product = new Product(lot.Product);

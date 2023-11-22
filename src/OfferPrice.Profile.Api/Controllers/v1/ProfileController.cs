@@ -4,7 +4,7 @@ using OfferPrice.Common;
 using OfferPrice.Events.Events;
 using OfferPrice.Events.Interfaces;
 using OfferPrice.Profile.Api.Models;
-using OfferPrice.Profile.Domain;
+using OfferPrice.Profile.Domain.Interfaces;
 
 namespace OfferPrice.Profile.Api.Controllers.v1;
 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OfferPrice.Auction.Api.Models;
+using OfferPrice.Auction.Domain.Models;
 
 namespace OfferPrice.Auction.Api.Profiles
 {
@@ -8,9 +9,9 @@ namespace OfferPrice.Auction.Api.Profiles
         public MapperProfile()
         {
 
-            CreateMap<Domain.Lot, Lot>();
+            CreateMap<Domain.Models.Lot, Lot>();
 
-            CreateMap<Domain.Bet, Bet>();
+            CreateMap<Domain.Models.Bet, Bet>();
         }
     }
 }

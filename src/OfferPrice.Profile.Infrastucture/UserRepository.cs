@@ -1,6 +1,7 @@
 ﻿
 using MongoDB.Driver;
-using OfferPrice.Profile.Domain;
+using OfferPrice.Profile.Domain.Interfaces;
+using OfferPrice.Profile.Domain.Models;
 
 namespace OfferPrice.Profile.Infrastructure;
 
