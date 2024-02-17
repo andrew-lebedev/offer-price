@@ -1,5 +1,4 @@
 ﻿using OfferPrice.Profile.Api.Models;
-using OfferPrice.Profile.Domain.Models;
 
 namespace OfferPrice.Profile.Api.Profiles;
 public class MappingProfile : AutoMapper.Profile
