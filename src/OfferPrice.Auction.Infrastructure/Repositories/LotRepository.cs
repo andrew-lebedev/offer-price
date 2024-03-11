@@ -1,11 +1,9 @@
 ﻿using MongoDB.Driver;
-using OfferPrice.Auction.Domain;
+using OfferPrice.Auction.Domain.Enums;
 using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Auction.Domain.Models;
 using OfferPrice.Auction.Domain.Queries;
 using OfferPrice.Common;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OfferPrice.Auction.Infrastructure.Repositories;
 

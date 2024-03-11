@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using OfferPrice.Auction.Api.Models;
+using OfferPrice.Auction.Api.Models.Requests;
+using OfferPrice.Auction.Api.Models.Responses;
 using OfferPrice.Auction.Api.Settings;
 using OfferPrice.Auction.Domain.Interfaces;
 using System;

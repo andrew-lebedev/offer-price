@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
 
         services.AddRabbitMqProducer(settings.RabbitMq);
 
-        services.AddRabbitMqConsumer<ProductCreatedEventConsumer>(settings.RabbitMq);
+        //services.AddRabbitMqConsumer<ProductCreatedEventConsumer>(settings.RabbitMq);
         services.AddRabbitMqConsumer<UserCreatedEventConsumer>(settings.RabbitMq);
 
         return services;

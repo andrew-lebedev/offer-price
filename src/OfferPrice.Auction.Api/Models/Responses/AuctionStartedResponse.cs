@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace OfferPrice.Auction.Api.Models;
+namespace OfferPrice.Auction.Api.Models.Responses;
 public class AuctionStartedResponse
 {
     public AuctionStartedResponse(decimal price, DateTime timeToFinish)
@@ -11,7 +11,7 @@ public class AuctionStartedResponse
         ProductPrice = price;
         TimeToFinish = timeToFinish;
     }
-    
+
     public decimal ProductPrice { get; set; }
     public DateTime TimeToFinish { get; set; }
 }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Auction.Api.Models;
+using OfferPrice.Auction.Api.Models.Requests;
+using OfferPrice.Auction.Api.Models.Responses;
 using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Common.Extensions;
 using OfferPrice.Events.Events;
@@ -47,9 +49,13 @@ public class LotController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<Models.Lot>(lot));
+        return Ok(_mapper.Map<Lot>(lot));
     }
 
+    public async Task<IActionResult> Create([FromBody] CreateLotRequest createLotRequest, CancellationToken cancellationToken)
+    {
+        return Ok();
+    }
 
     [HttpPost("{id}/delivery")]
     public async Task<IActionResult> Deliver([FromRoute] string id, CancellationToken token)
@@ -73,7 +79,7 @@ public class LotController : ControllerBase
         {
             LotId = lot.Id,
             ProductId = lot.Product.Id,
-            Status = lot.Status
+            Status = lot.Status.ToString(),
         });
         
         return Ok();
@@ -111,7 +117,7 @@ public class LotController : ControllerBase
         {
             LotId = lot.Id,
             ProductId = lot.Product.Id,
-            Status = lot.Status
+            Status = lot.Status.ToString()
         });
 
         return Ok();

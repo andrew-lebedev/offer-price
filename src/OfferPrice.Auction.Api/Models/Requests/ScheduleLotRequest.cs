@@ -1,6 +1,6 @@
 using System;
 
-namespace OfferPrice.Auction.Api.Models;
+namespace OfferPrice.Auction.Api.Models.Requests;
 
 public class ScheduleLotRequest
 {

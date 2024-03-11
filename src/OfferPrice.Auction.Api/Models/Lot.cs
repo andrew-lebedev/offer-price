@@ -13,7 +13,7 @@ public class Lot
         Winner = User.FromDomain(lot.Winner);
         BetHistory = lot.BetHistory.Select(x => new Bet(x)).ToList();
         Price = lot.Price;
-        Status = lot.Status;
+        Status = lot.Status.ToString();
         Start = lot.Start;
         End = lot.End;
     }
