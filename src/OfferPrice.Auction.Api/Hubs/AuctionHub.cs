@@ -25,7 +25,7 @@ public class AuctionHub : Hub<IAuctionClient>
     public async Task RaiseBet(RaiseBetRequest request)
     {
         var cancellationToken = CancellationToken.None;
-        
+
         var auctionId = GetAuctionId();
         var lot = await _lotRepository.Get(auctionId, cancellationToken);
 
@@ -53,11 +53,11 @@ public class AuctionHub : Hub<IAuctionClient>
             await Clients.Caller.OnBetDeclined(new(lot, lot.Updated.AddSeconds(_settings.BetIntervalInSec)));
             return;
         }
-        
+
         var _ = lot.RaiseBet(user, request.Raise);
         try
         {
-            await _lotRepository.Update(lot, cancellationToken);
+            await _lotRepository.Update(lot, user.Id, cancellationToken);
         }
         catch
         {

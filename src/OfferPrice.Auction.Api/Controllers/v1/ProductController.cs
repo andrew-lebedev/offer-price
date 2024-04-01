@@ -49,7 +49,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] InsertProductRequest insertProductRequest, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductRequest insertProductRequest, CancellationToken cancellationToken)
     {
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
         var user = await _userRepository.Get(userId, cancellationToken);

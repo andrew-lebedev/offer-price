@@ -1,5 +1,4 @@
 ﻿using OfferPrice.Auction.Domain.Enums;
-using System;
 using System.Collections.Generic;
 
 namespace OfferPrice.Auction.Domain.Models;
@@ -30,6 +29,8 @@ public class Product
     public string Brand { get; set; }
 
     public string Category { get; set; }
+
+    public string Location { get; set; }
 
     public decimal Price { get; set; }
 

@@ -39,9 +39,12 @@ public class LotRepository : ILotRepository
         return _lots.InsertOneAsync(lot, cancellationToken: token);
     }
 
-    public Task Delete(string id, CancellationToken token)
+    public Task Delete(string id, string userId, CancellationToken token)
     {
-        return _lots.DeleteOneAsync(Builders<Lot>.Filter.Eq(x => x.Id, id), cancellationToken: token);
+        return _lots.DeleteOneAsync(
+            Builders<Lot>.Filter.Eq(x => x.Product.User.Id, userId) & 
+            Builders<Lot>.Filter.Eq(x => x.Id, id),
+            cancellationToken: token);
     }
 
     public Task<Lot> Get(string id, CancellationToken token)
@@ -101,15 +104,19 @@ public class LotRepository : ILotRepository
         return _lots.Find(fromFilter & statusFilter).ToListAsync(cancellationToken);
     }
 
-    public async Task Update(Lot lot, CancellationToken token)
+    public async Task Update(Lot lot, string userId, CancellationToken token)
     {
         var version = lot.Version;
 
         lot.Version++;
         lot.Updated = DateTime.UtcNow;
 
+        var idFilter = Builders<Lot>.Filter.Eq(x => x.Id, lot.Id);
+        var versionFilter = Builders<Lot>.Filter.Eq(x => x.Version, version);
+        var userIdFilter = Builders<Lot>.Filter.Eq(x => x.Product.User.Id, userId);
+
         await _lots.UpdateOneAsync(
-            Builders<Lot>.Filter.Eq(x => x.Id, lot.Id) & Builders<Lot>.Filter.Eq(x => x.Version, version),
+            idFilter & versionFilter & userIdFilter,
             Builders<Lot>.Update
                 .Set(x => x.Product, lot.Product)
                 .Set(x => x.Winner, lot.Winner)

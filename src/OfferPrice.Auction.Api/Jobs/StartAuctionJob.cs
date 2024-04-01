@@ -46,7 +46,8 @@ public class StartAuctionJob : BackgroundService
 
             try
             {
-                await _lotRepository.Update(lot, cancellationToken); // todo: add concurrency
+                // todo: add user or new method
+                await _lotRepository.Update(lot, string.Empty, cancellationToken); // todo: add concurrency
                 await _hubContext.Clients.Group(lot.Id).SendAsync(
                     nameof(IAuctionClient.OnAuctionStarted),
                     new AuctionStartedResponse(lot.Price, lot.Updated.AddSeconds(_settings.BetIntervalInSec)),

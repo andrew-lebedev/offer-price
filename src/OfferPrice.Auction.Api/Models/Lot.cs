@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfferPrice.Auction.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +17,7 @@ public class Lot
         Status = lot.Status.ToString();
         Start = lot.Start;
         End = lot.End;
+        AuctionType = lot.AuctionType;
     }
     
     public string Id { get; set; }
@@ -26,4 +28,6 @@ public class Lot
     public string Status { get; set; }
     public DateTime? Start { get; set; }
     public DateTime? End { get; set; }
+    public AuctionType AuctionType { get; set; }
+    public string AdditionalInfo { get; set; }
 }

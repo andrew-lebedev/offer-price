@@ -23,11 +23,15 @@ public class Lot
 
     public LotStatus Status { get; set; }
 
+    public AuctionType AuctionType { get; set; }
+
     public List<Bet> BetHistory { get; set; }
 
     public DateTime? Start { get; set; }
 
     public DateTime? End { get; set; }
+
+    public string AdditionalInfo { get; set; }
 
     public DateTime Created { get; set; }
 

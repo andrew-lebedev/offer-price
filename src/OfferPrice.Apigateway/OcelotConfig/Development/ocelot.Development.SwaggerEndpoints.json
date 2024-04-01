@@ -23,17 +23,6 @@
             ]
         },
         {
-            "Key": "catalog",
-            "TransformByOcelotConfig": true,
-            "Config": [
-                {
-                    "Name": "Catalog API",
-                    "Version": "v1",
-                    "Url": "https://localhost:5001/swagger/v1/swagger.json"
-                }
-            ]
-        },
-        {
             "Key": "auction",
             "TransformByOcelotConfig": true,
             "Config": [
