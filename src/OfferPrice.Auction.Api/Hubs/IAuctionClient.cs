@@ -1,4 +1,4 @@
-using OfferPrice.Auction.Api.Models;
+using OfferPrice.Auction.Api.Models.Responses;
 using System.Threading.Tasks;
 
 namespace OfferPrice.Auction.Api.Hubs;

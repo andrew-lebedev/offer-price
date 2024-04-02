@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfferPrice.Auction.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,7 +21,9 @@ public class Lot
 
     public decimal Price { get; set; }
 
-    public string Status { get; set; }
+    public LotStatus Status { get; set; }
+
+    public AuctionType AuctionType { get; set; }
 
     public List<Bet> BetHistory { get; set; }
 
@@ -28,8 +31,12 @@ public class Lot
 
     public DateTime? End { get; set; }
 
+    public string AdditionalInfo { get; set; }
+
     public DateTime Created { get; set; }
+
     public DateTime Updated { get; set; }
+
     public int Version { get; set; }
 
     public void Schedule(DateTime date)

@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Auction.Api.Models;
+using OfferPrice.Auction.Api.Models.Requests;
+using OfferPrice.Auction.Api.Models.Responses;
 using OfferPrice.Auction.Domain.Interfaces;
+using OfferPrice.Common;
 using OfferPrice.Common.Extensions;
 using OfferPrice.Events.Events;
 using OfferPrice.Events.Interfaces;
@@ -47,9 +50,38 @@ public class LotController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<Models.Lot>(lot));
+        return Ok(_mapper.Map<Lot>(lot));
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] LotRequest createLotRequest, CancellationToken cancellationToken)
+    {
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+        var user = await _users.Get(userId, cancellationToken);
+
+        if (user == null)
+        {
+            return Conflict();
+        }
+
+        var lot = _mapper.Map<Domain.Models.Lot>(createLotRequest);
+
+        await _lots.Create(lot, cancellationToken);
+
+        return Ok();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromBody] LotRequest updateLotRequest, CancellationToken cancellationToken)
+    {
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
+        var lot = _mapper.Map<Domain.Models.Lot>(updateLotRequest);
+
+        await _lots.Update(lot, userId, cancellationToken);
+
+        return Ok();
+    }
 
     [HttpPost("{id}/delivery")]
     public async Task<IActionResult> Deliver([FromRoute] string id, CancellationToken token)
@@ -66,28 +98,30 @@ public class LotController : ControllerBase
             return Conflict();
         }
 
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
         lot.Deliver();
-        await _lots.Update(lot, token);
+        await _lots.Update(lot, userId, token);
 
         _producer.SendMessage(new LotStatusUpdatedEvent
         {
             LotId = lot.Id,
             ProductId = lot.Product.Id,
-            Status = lot.Status
+            Status = lot.Status.ToString(),
         });
-        
+
         return Ok();
     }
 
     [HttpPost("{id}/schedule")]
-    public async Task<IActionResult> Schedule(string id, [FromBody] ScheduleLotRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Schedule([FromRoute] string id, [FromBody] ScheduleLotRequest request, CancellationToken cancellationToken)
     {
         var lot = await _lots.Get(id, cancellationToken);
         if (lot == null)
         {
             return NotFound();
         }
-        
+
         var user = await _users.Get(request.UserId, cancellationToken);
         if (user == null)
         {
@@ -101,17 +135,19 @@ public class LotController : ControllerBase
 
         if (lot.IsStarted())
         {
-            return Conflict(); 
+            return Conflict();
         }
 
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
         lot.Schedule(request.Start.RemoveSeconds());
-        await _lots.Update(lot, cancellationToken);
-                
+        await _lots.Update(lot, userId, cancellationToken);
+
         _producer.SendMessage(new LotStatusUpdatedEvent
         {
             LotId = lot.Id,
             ProductId = lot.Product.Id,
-            Status = lot.Status
+            Status = lot.Status.ToString()
         });
 
         return Ok();
@@ -120,7 +156,9 @@ public class LotController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAuction([FromRoute] string id, CancellationToken token)
     {
-        await _lots.Delete(id, token);
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
+        await _lots.Delete(id, userId, token);
 
         return Ok();
     }

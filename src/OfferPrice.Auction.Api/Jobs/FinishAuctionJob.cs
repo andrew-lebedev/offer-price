@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using OfferPrice.Auction.Api.Hubs;
-using OfferPrice.Auction.Api.Models;
+using OfferPrice.Auction.Api.Models.Responses;
 using OfferPrice.Auction.Api.Settings;
 using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Events.Events;
@@ -46,7 +46,8 @@ public class FinishAuctionJob : BackgroundService
 
             try
             {
-                await _lotRepository.Update(lot, cancellationToken); // todo: add concurrency
+                // todo: add user or new method
+                await _lotRepository.Update(lot, string.Empty, cancellationToken); // todo: add concurrency
                 await _hubContext.Clients.Group(lot.Id).SendAsync(
                     nameof(IAuctionClient.OnAuctionFinished),
                     new AuctionFinishedResponse(lot),
@@ -57,7 +58,7 @@ public class FinishAuctionJob : BackgroundService
                 {
                     LotId = lot.Id,
                     ProductId = lot.Product.Id,
-                    Status = lot.Status
+                    Status = lot.Status.ToString()
                 });
             }
             catch
