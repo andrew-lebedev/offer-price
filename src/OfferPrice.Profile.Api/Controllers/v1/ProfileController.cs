@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Common;
-using OfferPrice.Events.Events;
-using OfferPrice.Events.Interfaces;
 using OfferPrice.Profile.Api.Models;
 using OfferPrice.Profile.Domain.Interfaces;
 
@@ -14,12 +12,10 @@ namespace OfferPrice.Profile.Api.Controllers.v1;
 public class ProfileController : ControllerBase
 {
     private readonly IUserRepository _users;
-    private readonly IProducer _producer;
     private readonly IMapper _mapper;
-    public ProfileController(IUserRepository users, IProducer producer, IMapper mapper)
+    public ProfileController(IUserRepository users, IMapper mapper)
     {
         _users = users;
-        _producer = producer;
         _mapper = mapper;
     }
 
@@ -55,7 +51,7 @@ public class ProfileController : ControllerBase
         var update = _mapper.Map(updateUserRequest, user);
         await _users.Update(update, token);
 
-        _producer.SendMessage(new UserUpdatedEvent(update.ToEvent()));
+        //_producer.SendMessage(new UserUpdatedEvent(update.ToEvent()));
 
         return Ok();
     }

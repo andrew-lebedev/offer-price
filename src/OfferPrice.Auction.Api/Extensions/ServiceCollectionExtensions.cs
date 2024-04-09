@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
@@ -6,9 +6,11 @@ using OfferPrice.Auction.Api.Jobs;
 using OfferPrice.Auction.Api.Settings;
 using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Auction.Infrastructure;
-using OfferPrice.Auction.Infrastructure.Events;
+using OfferPrice.Auction.Infrastructure.Consumers;
 using OfferPrice.Auction.Infrastructure.Repositories;
+using OfferPrice.Events.Events;
 using OfferPrice.Events.RabbitMq;
+using OfferPrice.Events.RabbitMq.Options;
 
 namespace OfferPrice.Auction.Api.Extensions;
 
@@ -40,14 +42,20 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection RegisterRabbitMq(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddRMQ(this IServiceCollection services, RabbitMqSettings settings)
     {
-        var settings = configuration.Get<AppSettings>();
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<UserCreatedConsumer>();
+            x.AddConsumer<UserUpdatedConsumer>();
 
-        services.AddRabbitMqProducer(settings.RabbitMq);
-
-        //services.AddRabbitMqConsumer<ProductCreatedEventConsumer>(settings.RabbitMq);
-        services.AddRabbitMqConsumer<UserCreatedEventConsumer>(settings.RabbitMq);
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.AddRMQHost(settings);
+                cfg.AddRMQConsumer<UserCreatedConsumer, UserCreatedEvent>(context, settings);
+                cfg.AddRMQConsumer<UserUpdatedConsumer, UserUpdatedEvent>(context, settings);
+            });
+        });
 
         return services;
     }

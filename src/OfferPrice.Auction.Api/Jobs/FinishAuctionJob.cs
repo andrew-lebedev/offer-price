@@ -4,8 +4,6 @@ using OfferPrice.Auction.Api.Hubs;
 using OfferPrice.Auction.Api.Models.Responses;
 using OfferPrice.Auction.Api.Settings;
 using OfferPrice.Auction.Domain.Interfaces;
-using OfferPrice.Events.Events;
-using OfferPrice.Events.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,14 +14,12 @@ public class FinishAuctionJob : BackgroundService
 {
     private readonly ILotRepository _lotRepository;
     private readonly IHubContext<AuctionHub> _hubContext;
-    private readonly IProducer _producer;
     private readonly AuctionSettings _settings;
 
-    public FinishAuctionJob(ILotRepository lotRepository, IHubContext<AuctionHub> hubContext, IProducer producer, AuctionSettings settings)
+    public FinishAuctionJob(ILotRepository lotRepository, IHubContext<AuctionHub> hubContext, AuctionSettings settings)
     {
         _lotRepository = lotRepository;
         _hubContext = hubContext;
-        _producer = producer;
         _settings = settings;
     }
 
@@ -54,12 +50,12 @@ public class FinishAuctionJob : BackgroundService
                     cancellationToken
                 );
                 
-                _producer.SendMessage(new LotStatusUpdatedEvent
-                {
-                    LotId = lot.Id,
-                    ProductId = lot.Product.Id,
-                    Status = lot.Status.ToString()
-                });
+                //_producer.SendMessage(new LotStatusUpdatedEvent
+                //{
+                //    LotId = lot.Id,
+                //    ProductId = lot.Product.Id,
+                //    Status = lot.Status.ToString()
+                //});
             }
             catch
             {

@@ -13,7 +13,7 @@ builder.Services.AddGatewayAuthentication();
 builder.Services.RegisterSwagger();
 builder.Services.AddVersioning(config);
 
-builder.Services.RegisterRabbitMq(settings.RabbitMq);
+builder.Services.AddRMQ(settings.RabbitMq);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

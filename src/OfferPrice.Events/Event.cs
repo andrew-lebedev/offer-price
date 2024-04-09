@@ -1,6 +1,6 @@
 namespace OfferPrice.Events;
 
-public class Event
+public abstract class Event
 {
     public Event()
     {
@@ -8,6 +8,6 @@ public class Event
         Timestamp = DateTime.UtcNow;
     }
     
-    public string Id { get; set; }
-    public DateTime Timestamp { get; set; }
+    public string Id { get; init; }
+    public DateTime Timestamp { get; init; }
 }

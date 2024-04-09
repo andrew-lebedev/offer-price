@@ -1,21 +1,13 @@
-﻿using OfferPrice.Events.Interfaces;
-using OfferPrice.Events.RabbitMq.Options;
+﻿using OfferPrice.Events.RabbitMq.Options;
 using System;
 
 namespace OfferPrice.Events.RabbitMq.Helpers;
 
-public class RabbitMqEventResolver : IEventResolver
+public static class RabbitMqEventResolver
 {
-    private readonly RabbitMqSettings _options;
-
-    public RabbitMqEventResolver(RabbitMqSettings options)
+    public static EventOptions Resolve<T>(RabbitMqSettings settings) where T : Event
     {
-        _options = options;
-    }
-
-    public EventOptions Resolve<T>() where T : Event
-    {
-        if (_options.Events.TryGetValue(typeof(T).Name, out var eventOptions))
+        if (settings.Events.TryGetValue(typeof(T).Name, out var eventOptions))
         {
             return eventOptions;
         }

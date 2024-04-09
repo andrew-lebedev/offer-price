@@ -1,43 +1,54 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using OfferPrice.Events.Interfaces;
+using MassTransit;
 using OfferPrice.Events.RabbitMq.Helpers;
 using OfferPrice.Events.RabbitMq.Options;
-using System.Linq;
+using RabbitMQ.Client;
 
 namespace OfferPrice.Events.RabbitMq;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddRabbitMqProducer(this IServiceCollection services, RabbitMqSettings settings)
+    public static void AddRMQHost(this IRabbitMqBusFactoryConfigurator cfg, RabbitMqSettings settings)
     {
-        services.TryAddSingleton(settings);
-        services.TryAddSingleton<IEventResolver, RabbitMqEventResolver>();
-        services.AddSingleton<IProducer, RabbitMqProducer>();
-
-        return services;
-    }
-
-    public static IServiceCollection AddRabbitMqConsumer<TConsumer>(this IServiceCollection services,
-        RabbitMqSettings settings)
-        where TConsumer : class, IConsumer
-    {
-        services.TryAddSingleton(settings);
-        services.TryAddSingleton<IEventResolver, RabbitMqEventResolver>();
-        services.AddSingleton<IConsumer, TConsumer>();
-        
-        services.TryAddConsumerService();
-
-        return services;
-    }
-
-    private static void TryAddConsumerService(this IServiceCollection services)
-    {
-        var isRegistered = services.FirstOrDefault(s => s.ImplementationType == typeof(ConsumerService));
-
-        if (isRegistered == null)
+        cfg.Host(settings.Host, "/", s =>
         {
-            services.AddHostedService<ConsumerService>();
-        }
+            s.Username(settings.Username);
+            s.Password(settings.Password);
+        });
+    }
+
+    public static void AddRMQProducer<TEvent>(this IRabbitMqBusFactoryConfigurator cfg, RabbitMqSettings settings)
+        where TEvent : Event
+    {
+        var resolve = RabbitMqEventResolver.Resolve<TEvent>(settings);
+
+        cfg.Message<TEvent>(e => e.SetEntityName(resolve.Exchange));
+        cfg.Publish<TEvent>(e => e.ExchangeType = ExchangeType.Direct);
+        cfg.Send<TEvent>(e =>
+        {
+            e.UseRoutingKeyFormatter(formatter => resolve.Key);
+        });
+    }
+
+    public static void AddRMQConsumer<TConsumer, TEvent>
+        (this IReceiveConfigurator<IRabbitMqReceiveEndpointConfigurator> cfg,
+        IBusRegistrationContext context,
+        RabbitMqSettings settings)
+        where TConsumer : IConsumer
+        where TEvent : Event
+    {
+        var resolve = RabbitMqEventResolver.Resolve<TEvent>(settings);
+
+        cfg.ReceiveEndpoint(resolve.Queue, e =>
+        {
+            e.ConfigureConsumeTopology = false;
+
+            e.ConfigureConsumer(context, typeof(TConsumer));
+
+            e.Bind(resolve.Exchange, ex =>
+            {
+                ex.RoutingKey = resolve.Key;
+                ex.ExchangeType = ExchangeType.Direct;
+            });
+        });
     }
 }
