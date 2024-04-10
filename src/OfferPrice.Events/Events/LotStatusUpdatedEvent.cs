@@ -2,7 +2,7 @@ namespace OfferPrice.Events.Events;
 
 public class LotStatusUpdatedEvent : Event
 {
-    public string LotId { get; set; }
-    public string ProductId { get; set; }
-    public string Status { get; set; }
+    public string LotId { get; init; }
+    public string ProductId { get; init; }
+    public string Status { get; init; }
 }

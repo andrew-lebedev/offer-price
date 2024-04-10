@@ -16,9 +16,9 @@ builder.Services.AddVersioning(config);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.RegisterDatebase(settings.Database);
+builder.Services.RegisterDatabase(settings.Database);
 
-builder.Services.RegisterRabbitMq(settings.RabbitMq);
+builder.Services.AddRMQ(settings.RabbitMq);
 
 builder.Services.AddProblemDetails();
 builder.Services.AddScoped<OperationCanceledFilter>();

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Events.Events;
-using OfferPrice.Events.Interfaces;
 using OfferPrice.Profile.Api.Models;
 using OfferPrice.Profile.Domain.Interfaces;
 using OfferPrice.Profile.Domain.Models;
@@ -16,14 +16,18 @@ public class AuthController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
-    private readonly IProducer _producer;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public AuthController(IUserRepository userRepository, IRoleRepository roleRepository, IProducer producer, IMapper mapper)
+    public AuthController(
+        IUserRepository userRepository,
+        IRoleRepository roleRepository,
+        IMapper mapper,
+        IPublishEndpoint publishEndpoint)
     {
         _mapper = mapper;
         _userRepository = userRepository;
         _roleRepository = roleRepository;
-        _producer = producer;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpPost("login")]
@@ -52,7 +56,7 @@ public class AuthController : ControllerBase
 
         await _userRepository.Create(user, token);
 
-        _producer.SendMessage(new UserCreatedEvent(user.ToEvent()));
+        await _publishEndpoint.Publish<UserCreatedEvent>(new(user.ToEvent()));
 
         return Ok();
     }

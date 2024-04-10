@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Auction.Api.Models;
 using OfferPrice.Auction.Api.Models.Requests;
@@ -7,7 +8,6 @@ using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Common;
 using OfferPrice.Common.Extensions;
 using OfferPrice.Events.Events;
-using OfferPrice.Events.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,16 +20,20 @@ public class LotController : ControllerBase
 {
     private readonly ILotRepository _lots;
     private readonly IUserRepository _users;
-    private readonly IProducer _producer;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     private readonly IMapper _mapper;
 
-    public LotController(ILotRepository lots, IUserRepository users, IProducer producer, IMapper mapper)
+    public LotController(
+        ILotRepository lots,
+        IUserRepository users,
+        IMapper mapper,
+        IPublishEndpoint publishEndpoint)
     {
         _lots = lots;
         _users = users;
-        _producer = producer;
         _mapper = mapper;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -103,12 +107,13 @@ public class LotController : ControllerBase
         lot.Deliver();
         await _lots.Update(lot, userId, token);
 
-        _producer.SendMessage(new LotStatusUpdatedEvent
-        {
-            LotId = lot.Id,
-            ProductId = lot.Product.Id,
-            Status = lot.Status.ToString(),
-        });
+        await _publishEndpoint.Publish<LotStatusUpdatedEvent>(
+            new
+            {
+                LotId = lot.Id,
+                ProductId = lot.Product.Id,
+                Status = lot.Status.ToString(),
+            }, token);
 
         return Ok();
     }
@@ -143,12 +148,12 @@ public class LotController : ControllerBase
         lot.Schedule(request.Start.RemoveSeconds());
         await _lots.Update(lot, userId, cancellationToken);
 
-        _producer.SendMessage(new LotStatusUpdatedEvent
-        {
-            LotId = lot.Id,
-            ProductId = lot.Product.Id,
-            Status = lot.Status.ToString()
-        });
+        //_producer.SendMessage(new LotStatusUpdatedEvent
+        //{
+        //    LotId = lot.Id,
+        //    ProductId = lot.Product.Id,
+        //    Status = lot.Status.ToString()
+        //});
 
         return Ok();
     }

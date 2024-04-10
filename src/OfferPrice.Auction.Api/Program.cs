@@ -31,7 +31,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddInfrastructure(settings.Database);
 
-builder.Services.RegisterRabbitMq(config);
+builder.Services.AddRMQ(settings.RabbitMq);
 
 builder.Services.AddSingleton<OperationCanceledFilter>();
 builder.Services.AddControllers(options =>

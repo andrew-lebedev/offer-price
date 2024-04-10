@@ -1,9 +1,8 @@
-﻿
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using OfferPrice.Profile.Domain.Interfaces;
 using OfferPrice.Profile.Domain.Models;
 
-namespace OfferPrice.Profile.Infrastructure;
+namespace OfferPrice.Profile.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {

@@ -2,9 +2,11 @@
 using OfferPrice.Payment.Api.Settings;
 using OfferPrice.Payment.Domain.Interfaces;
 using OfferPrice.Payment.Infrastructure.Repositories;
-using OfferPrice.Payment.Infrastructure.Events;
+using OfferPrice.Payment.Infrastructure.Consumers;
 using OfferPrice.Events.RabbitMq;
 using OfferPrice.Events.RabbitMq.Options;
+using MassTransit;
+using OfferPrice.Events.Events;
 
 namespace OfferPrice.Payment.Api.Extensions;
 
@@ -22,11 +24,18 @@ public static class ServiceCollectionExtesions
         return services;
     }
 
-    public static IServiceCollection RegisterRabbitMq(this IServiceCollection services, RabbitMqSettings settings)
+    public static IServiceCollection AddRMQ(this IServiceCollection services, RabbitMqSettings settings)
     {
-        services.AddRabbitMqProducer(settings);
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<UserCreatedConsumer>();
 
-        services.AddRabbitMqConsumer<UserCreatedEventConsumer>(settings);
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.AddRMQHost(settings);
+                cfg.AddRMQConsumer<UserCreatedConsumer, UserCreatedEvent>(context, settings);
+            });
+        });
 
         return services;
     }
