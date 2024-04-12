@@ -6,8 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
@@ -17,7 +15,7 @@
     <ProjectReference Include="..\OfferPrice.Common\OfferPrice.Common.csproj" />
     <ProjectReference Include="..\OfferPrice.Events.RabbitMq\OfferPrice.Events.RabbitMq.csproj" />
     <ProjectReference Include="..\OfferPrice.Events\OfferPrice.Events.csproj" />
-    <ProjectReference Include="..\OfferPrice.Profile.Infrastucture\OfferPrice.Profile.Infrastructure.csproj" />
+    <ProjectReference Include="..\OfferPrice.Profile.Application\OfferPrice.Profile.Application.csproj" />
   </ItemGroup>
 
 </Project>

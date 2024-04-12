@@ -14,6 +14,12 @@ namespace OfferPrice.Profile.Api.Filters
         }
         public void OnException(ExceptionContext context)
         {
+            //context.Result = context.Exception switch
+            //{
+            //    context.Exception is OperationCanceledException =>
+            //    new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 400));
+            //};
+
             if (context.Exception is OperationCanceledException)
             {
                 context.Result = new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 400));

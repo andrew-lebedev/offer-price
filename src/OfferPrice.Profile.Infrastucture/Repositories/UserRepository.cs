@@ -25,6 +25,12 @@ public class UserRepository : IUserRepository
                      .SingleOrDefaultAsync();
     }
 
+    public Task<User> GetByEmail(string email, CancellationToken token)
+    {
+        return _users.Find(Builders<User>.Filter.Where(x => x.Email == email))
+                     .SingleOrDefaultAsync();
+    }
+
     public async Task Create(User user, CancellationToken token)
     {
         await _users.InsertOneAsync(user, cancellationToken: token);

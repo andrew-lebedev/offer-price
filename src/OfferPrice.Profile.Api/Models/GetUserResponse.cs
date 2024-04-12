@@ -1,11 +1,7 @@
-﻿namespace OfferPrice.Profile.Domain.Models;
-public class User
-{
-    public User()
-    {
-        Id = Guid.NewGuid().ToString();
-    }
+﻿namespace OfferPrice.Profile.Api.Models;
 
+public class GetUserResponse
+{
     public string Id { get; set; }
 
     public string Name { get; set; }
@@ -17,11 +13,4 @@ public class User
     public string Email { get; set; }
 
     public string Phone { get; set; }
-
-    public string PasswordHash { get; set; }
-
-    public List<Role> Roles { get; set; }
-
-
 }
-
