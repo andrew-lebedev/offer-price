@@ -1,15 +1,13 @@
-using System.Collections.Generic;
-
-namespace OfferPrice.Auction.Api.Models;
+namespace OfferPrice.Auction.Application.Models;
 
 public class Product
 {
-    public Product(Domain.Models.Product product)
+    public Product(Product product)
     {
         Id = product.Id;
         Name = product.Name;
         Images = product.Images;
-        User = User.FromDomain(product.User);
+        User = User.FromApplication(product.User);
         Brand = product.Brand;
     }
 

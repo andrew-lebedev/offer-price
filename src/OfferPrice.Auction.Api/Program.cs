@@ -27,6 +27,9 @@ builder.Services.AddVersioning(config);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddMediatR(cfg 
+    => cfg.RegisterServicesFromAssemblies(typeof(OfferPrice.Auction.Application.Assembly).Assembly));
+
 builder.Services.AddSignalR();
 
 builder.Services.AddInfrastructure(settings.Database);

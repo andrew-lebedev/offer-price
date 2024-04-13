@@ -1,17 +1,14 @@
 ﻿using OfferPrice.Auction.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace OfferPrice.Auction.Api.Models;
+namespace OfferPrice.Auction.Application.Models;
 
 public class Lot
 {
-    public Lot(Domain.Models.Lot lot)
+    public Lot(Lot lot)
     {
         Id = lot.Id;
         Product = new Product(lot.Product);
-        Winner = User.FromDomain(lot.Winner);
+        Winner = User.FromApplication(lot.Winner);
         BetHistory = lot.BetHistory.Select(x => new Bet(x)).ToList();
         Price = lot.Price;
         Status = lot.Status.ToString();
@@ -19,7 +16,7 @@ public class Lot
         End = lot.End;
         AuctionType = lot.AuctionType;
     }
-    
+
     public string Id { get; set; }
     public Product Product { get; set; }
     public User Winner { get; set; }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
-using OfferPrice.Auction.Api.Models;
 using OfferPrice.Auction.Api.Models.Requests;
+using OfferPrice.Auction.Api.Models.Responses;
+using OfferPrice.Auction.Application.LotOperations.CreateLot;
+using OfferPrice.Auction.Application.Models;
 
 namespace OfferPrice.Auction.Api.Profiles
 {
@@ -8,14 +10,12 @@ namespace OfferPrice.Auction.Api.Profiles
     {
         public MapperProfile()
         {
-
-            CreateMap<Domain.Models.Lot, Lot>();
-
-            CreateMap<Domain.Models.Bet, Bet>();
-
-            CreateMap<ProductRequest, Domain.Models.Product>();
-
-            CreateMap<LotRequest, Domain.Models.Lot>();
+            CreateMap<LotRequest, CreateLotCommand>();
+            CreateMap<Lot, Domain.Models.Lot>().ReverseMap();
+            CreateMap<ProductRequest, Product>();
+            CreateMap<Product, Domain.Models.Product>();
+            
+            CreateMap<Lot, GetLotResponse>();
         }
     }
 }

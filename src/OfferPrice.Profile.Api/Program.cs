@@ -21,13 +21,13 @@ builder.Services.RegisterDatabase(settings.Database);
 builder.Services.AddRMQ(settings.RabbitMq);
 
 builder.Services.AddMediatR(
-    cfg => cfg.RegisterServicesFromAssemblies(typeof(OfferPrice.Profile.Application.Assemby).Assembly));
+    cfg => cfg.RegisterServicesFromAssemblies(typeof(OfferPrice.Profile.Application.Assembly).Assembly));
 
 builder.Services.AddProblemDetails();
 builder.Services.AddScoped<OperationCanceledFilter>();
 builder.Services.AddControllers(options =>
 {
-    //options.Filters.Add<OperationCanceledFilter>();
+    options.Filters.Add<OperationCanceledFilter>();
 });
 
 var app = builder.Build();

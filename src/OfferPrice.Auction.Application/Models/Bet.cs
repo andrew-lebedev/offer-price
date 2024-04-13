@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace OfferPrice.Auction.Api.Models;
+﻿namespace OfferPrice.Auction.Application.Models;
 
 public class Bet
 {
-    public Bet(Domain.Models.Bet bet)
+    public Bet(Bet bet)
     {
-        User = User.FromDomain(bet.User);
+        User = User.FromApplication(bet.User);
         Raise = bet.Raise;
         Timestamp = bet.Timestamp;
     }

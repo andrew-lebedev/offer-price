@@ -1,17 +1,17 @@
-namespace OfferPrice.Auction.Api.Models;
+namespace OfferPrice.Auction.Application.Models;
 
 public class User
 {
     public string Id { get; set; }
     public string Email { get; set; }
 
-    public static User FromDomain(Domain.Models.User user)
+    public static User FromApplication(User user)
     {
         if (user == null)
         {
             return null;
         }
-        
+
         return new()
         {
             Id = user.Id,

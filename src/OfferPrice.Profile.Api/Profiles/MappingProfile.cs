@@ -10,7 +10,8 @@ public class MappingProfile : AutoMapper.Profile
     public MappingProfile()
     {
         CreateMap<Domain.Models.User, User>()
-            .ForMember(x => x.Roles, y => y.MapFrom(k => k.Roles.Select(m => m.Name)));
+            .ForMember(x => x.Roles, y => y.MapFrom(k => k.Roles.Select(m => m.Name)))
+            .ReverseMap();
 
         CreateMap<RegistrationUserRequest, RegisterUserCommand>();
         CreateMap<RegisterUserCommand, Domain.Models.User>();

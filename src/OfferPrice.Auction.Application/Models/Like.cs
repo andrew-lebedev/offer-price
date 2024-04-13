@@ -1,4 +1,4 @@
-﻿namespace OfferPrice.Auction.Api.Models;
+﻿namespace OfferPrice.Auction.Application.Models;
 
 public class Like
 {
