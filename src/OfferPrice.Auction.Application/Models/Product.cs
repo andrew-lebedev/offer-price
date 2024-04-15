@@ -1,3 +1,5 @@
+using OfferPrice.Auction.Domain.Enums;
+
 namespace OfferPrice.Auction.Application.Models;
 
 public class Product
@@ -7,7 +9,7 @@ public class Product
         Id = product.Id;
         Name = product.Name;
         Images = product.Images;
-        User = User.FromApplication(product.User);
+        User = User.FromDomain(product.User);
         Brand = product.Brand;
     }
 
@@ -25,5 +27,9 @@ public class Product
 
     public string Category { get; set; }
 
+    public string Location { get; set; }
+
     public decimal Price { get; set; }
+
+    public ProductStatus State { get; set; }
 }

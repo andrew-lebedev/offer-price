@@ -6,9 +6,10 @@ using OfferPrice.Common;
 
 namespace OfferPrice.Auction.Application.LotOperations.GetLot;
 
-public class GetLotCommandHandler : 
+public class GetLotCommandHandler :
     IRequestHandler<GetLotCommand, Lot>,
-    IRequestHandler<GetLotsCommand, PageResult<Lot>>
+    IRequestHandler<GetLotsCommand, PageResult<Lot>>,
+    IRequestHandler<GetLotWithUserBetsCommand, IEnumerable<Lot>>
 {
     private readonly ILotRepository _lotRepository;
     private readonly IMapper _mapper;
@@ -27,14 +28,21 @@ public class GetLotCommandHandler :
         {
             throw new Exception();
         }
-        
+
         return _mapper.Map<Lot>(lot);
     }
 
     public async Task<PageResult<Lot>> Handle(GetLotsCommand request, CancellationToken cancellationToken)
     {
-         var result = await _lotRepository.Find(request.Query, cancellationToken);
+        var result = await _lotRepository.Find(request.Query, cancellationToken);
 
         return _mapper.Map<PageResult<Lot>>(result);
+    }
+
+    public async Task<IEnumerable<Lot>> Handle(GetLotWithUserBetsCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _lotRepository.Find(new Domain.Queries.FindLotsQuery(), cancellationToken);
+
+        return (IEnumerable<Lot>)result.Items;
     }
 }

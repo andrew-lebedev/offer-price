@@ -4,7 +4,7 @@ public class Bet
 {
     public Bet(Bet bet)
     {
-        User = User.FromApplication(bet.User);
+        User = User.FromDomain(bet.User);
         Raise = bet.Raise;
         Timestamp = bet.Timestamp;
     }

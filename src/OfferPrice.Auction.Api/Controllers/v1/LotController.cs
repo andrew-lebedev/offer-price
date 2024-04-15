@@ -55,6 +55,18 @@ public class LotController : ControllerBase
         return Ok(_mapper.Map<GetLotResponse>(lot));
     }
 
+    [HttpGet("with-my-bets")]
+    public async Task<IActionResult> GetUserBets(CancellationToken cancellationToken)
+    {
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
+        var cmd = new GetLotWithUserBetsCommand() { UserId = userId };
+
+        var lots = await _mediator.Send(cmd, cancellationToken);
+
+        return Ok(lots);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] LotRequest createLotRequest, CancellationToken cancellationToken)
     {

@@ -8,10 +8,10 @@ public class Lot
     {
         Id = lot.Id;
         Product = new Product(lot.Product);
-        Winner = User.FromApplication(lot.Winner);
+        Winner = User.FromDomain(lot.Winner);
         BetHistory = lot.BetHistory.Select(x => new Bet(x)).ToList();
         Price = lot.Price;
-        Status = lot.Status.ToString();
+        Status = lot.Status;
         Start = lot.Start;
         End = lot.End;
         AuctionType = lot.AuctionType;
@@ -22,7 +22,7 @@ public class Lot
     public User Winner { get; set; }
     public List<Bet> BetHistory { get; set; }
     public decimal Price { get; set; }
-    public string Status { get; set; }
+    public LotStatus Status { get; set; }
     public DateTime? Start { get; set; }
     public DateTime? End { get; set; }
     public AuctionType AuctionType { get; set; }

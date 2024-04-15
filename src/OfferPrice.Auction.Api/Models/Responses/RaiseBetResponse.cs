@@ -1,3 +1,4 @@
+using OfferPrice.Auction.Application.Models;
 using System;
 using System.Linq;
 
@@ -5,7 +6,7 @@ namespace OfferPrice.Auction.Api.Models.Responses;
 
 public class RaiseBetResponse
 {
-    public RaiseBetResponse(Domain.Models.Lot lot, DateTime timeToFinish)
+    public RaiseBetResponse(Lot lot, DateTime timeToFinish)
     {
         var lastBet = lot.BetHistory.Last();
 

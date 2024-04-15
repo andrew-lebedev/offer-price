@@ -5,7 +5,7 @@ public class User
     public string Id { get; set; }
     public string Email { get; set; }
 
-    public static User FromApplication(User user)
+    public static User FromDomain(User user)
     {
         if (user == null)
         {
