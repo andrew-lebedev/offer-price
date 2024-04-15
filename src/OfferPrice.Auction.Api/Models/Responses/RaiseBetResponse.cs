@@ -6,11 +6,11 @@ namespace OfferPrice.Auction.Api.Models.Responses;
 
 public class RaiseBetResponse
 {
-    public RaiseBetResponse(Lot lot, DateTime timeToFinish)
+    public RaiseBetResponse(Domain.Models.Lot lot, DateTime timeToFinish)
     {
         var lastBet = lot.BetHistory.Last();
 
-        BetOwner = User.FromDomain(lastBet.User);
+        //BetOwner = User.FromDomain(lastBet.User);
         BetTimestamp = lastBet.Timestamp;
         ProductPrice = lot.Price;
         TimeToFinish = timeToFinish;

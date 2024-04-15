@@ -5,10 +5,10 @@ namespace OfferPrice.Auction.Api.Models.Responses;
 
 public class AuctionFinishedResponse
 {
-    public AuctionFinishedResponse(Lot lot)
+    public AuctionFinishedResponse(Domain.Models.Lot lot)
     {
         Status = lot.Status;
-        Winner = User.FromDomain(lot.Winner);
+        //Winner = User.FromDomain(lot.Winner);
         ProductPrice = lot.Price;
     }
 

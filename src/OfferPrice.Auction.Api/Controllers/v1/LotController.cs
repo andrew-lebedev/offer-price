@@ -36,10 +36,10 @@ public class LotController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] FindLotsRequest request, CancellationToken token)
+    public async Task<IActionResult> Get([FromQuery] FindRegularLotsRequest request, CancellationToken token)
     {
-        var cmd = new GetLotsCommand() { Query = request.ToQuery() };
-
+        var cmd = _mapper.Map<GetRegularLotsCommand>(request);
+        
         var result = await _mediator.Send(cmd, token);
 
         return Ok(new FindLotsResponse(result));
@@ -55,12 +55,10 @@ public class LotController : ControllerBase
         return Ok(_mapper.Map<GetLotResponse>(lot));
     }
 
-    [HttpGet("with-my-bets")]
-    public async Task<IActionResult> GetUserBets(CancellationToken cancellationToken)
+    [HttpGet("user")]
+    public async Task<IActionResult> GetUserBets([FromQuery] FindUserLotsRequest request, CancellationToken cancellationToken)
     {
-        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
-
-        var cmd = new GetLotWithUserBetsCommand() { UserId = userId };
+        var cmd = _mapper.Map<GetUserLotsCommand>(request);
 
         var lots = await _mediator.Send(cmd, cancellationToken);
 

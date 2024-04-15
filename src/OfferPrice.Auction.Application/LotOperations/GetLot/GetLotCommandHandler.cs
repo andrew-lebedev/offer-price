@@ -2,14 +2,16 @@
 using MediatR;
 using OfferPrice.Auction.Application.Models;
 using OfferPrice.Auction.Domain.Interfaces;
+using OfferPrice.Auction.Infrastructure.Builders;
+using OfferPrice.Auction.Infrastructure.Directors;
 using OfferPrice.Common;
 
 namespace OfferPrice.Auction.Application.LotOperations.GetLot;
 
 public class GetLotCommandHandler :
     IRequestHandler<GetLotCommand, Lot>,
-    IRequestHandler<GetLotsCommand, PageResult<Lot>>,
-    IRequestHandler<GetLotWithUserBetsCommand, IEnumerable<Lot>>
+    IRequestHandler<GetRegularLotsCommand, PageResult<Lot>>,
+    IRequestHandler<GetUserLotsCommand, PageResult<Lot>>
 {
     private readonly ILotRepository _lotRepository;
     private readonly IMapper _mapper;
@@ -32,17 +34,27 @@ public class GetLotCommandHandler :
         return _mapper.Map<Lot>(lot);
     }
 
-    public async Task<PageResult<Lot>> Handle(GetLotsCommand request, CancellationToken cancellationToken)
+    public async Task<PageResult<Lot>> Handle(GetRegularLotsCommand request, CancellationToken cancellationToken)
     {
-        var result = await _lotRepository.Find(request.Query, cancellationToken);
+        var filterBuilder = new QueryFilterBuilder(request.Query);
+        var sortBuidler = new QuerySortBuilder(request.Query);
+        var director = new RegularLotsDirector(filterBuilder, sortBuidler);
+        director.Build();
+
+        var result = await _lotRepository.Find(filterBuilder, sortBuidler, request.Query.Paging, cancellationToken);
 
         return _mapper.Map<PageResult<Lot>>(result);
     }
 
-    public async Task<IEnumerable<Lot>> Handle(GetLotWithUserBetsCommand request, CancellationToken cancellationToken)
+    public async Task<PageResult<Lot>> Handle(GetUserLotsCommand request, CancellationToken cancellationToken)
     {
-        var result = await _lotRepository.Find(new Domain.Queries.FindLotsQuery(), cancellationToken);
+        var filterBuilder = new QueryFilterBuilder(request.Query);
+        var sortBuidler = new QuerySortBuilder(request.Query);
+        var director = new UserLotsDirector(filterBuilder);
+        director.Build();
 
-        return (IEnumerable<Lot>)result.Items;
+        var result = await _lotRepository.Find(filterBuilder, sortBuidler, request.Query.Paging, cancellationToken);
+
+        return _mapper.Map<PageResult<Lot>>(result);
     }
 }

@@ -5,7 +5,7 @@ using OfferPrice.Common;
 
 namespace OfferPrice.Auction.Application.LotOperations.GetLot;
 
-public class GetLotsCommand : IRequest<PageResult<Lot>>
+public class GetUserLotsCommand : IRequest<PageResult<Lot>>
 {
     public FindLotsQuery Query { get; set; }
 }

@@ -1,5 +1,4 @@
 ﻿using OfferPrice.Auction.Domain.Models;
-using OfferPrice.Auction.Domain.Queries;
 using OfferPrice.Common;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 namespace OfferPrice.Auction.Domain.Interfaces;
 public interface ILotRepository
 {
-    Task<PageResult<Lot>> Find(FindLotsQuery query, CancellationToken token);
+    Task<PageResult<Lot>> Find<T, K>(IQueryFilterBuilder<T> filterBuilder, IQuerySortBuilder<K> sortBuilder, Paging paging, CancellationToken token);
     Task<Lot> Get(string id, CancellationToken token);
     Task<Lot> GetByProductId(string productId, CancellationToken token);
     Task Create(Lot lot, CancellationToken token);
