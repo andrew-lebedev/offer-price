@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<ILikeRepository, LikeRepository>();
         services.AddSingleton<ICategoryRepository, CategoryRepository>();
+        services.AddSingleton<ILocationRepository, LocationRepository>();
 
         return services;
     }

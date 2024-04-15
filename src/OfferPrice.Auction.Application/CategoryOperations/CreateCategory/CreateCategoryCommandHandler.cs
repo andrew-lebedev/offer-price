@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using OfferPrice.Auction.Application.Exceptions;
 using OfferPrice.Auction.Domain.Interfaces;
 
 namespace OfferPrice.Auction.Application.CategoryOperations.CreateCategory;
@@ -18,10 +19,14 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
 
         if (category is not null)
         {
-            throw new Exception("This category already exists"); // todo
+            throw new ConflictException("This category already exists");
         }
 
-        category = new Domain.Models.Category { Name = request.Name };
+        category = new Domain.Models.Category
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = request.Name
+        };
 
         await _categoryRepository.Create(category, cancellationToken);
     }
