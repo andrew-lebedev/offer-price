@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MassTransit;
+using MongoDB.Driver;
 using OfferPrice.Auction.Domain.Enums;
 using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Auction.Domain.Models;
@@ -100,7 +101,7 @@ public class LotRepository : ILotRepository
         return _lots.Find(fromFilter & statusFilter).ToListAsync(cancellationToken);
     }
 
-    public async Task Update(Lot lot, string userId, CancellationToken token)
+    public Task Update(Lot lot, string userId, CancellationToken token)
     {
         var version = lot.Version;
 
@@ -111,8 +112,30 @@ public class LotRepository : ILotRepository
         var versionFilter = Builders<Lot>.Filter.Eq(x => x.Version, version);
         var userIdFilter = Builders<Lot>.Filter.Eq(x => x.Product.User.Id, userId);
 
-        await _lots.UpdateOneAsync(
-            idFilter & versionFilter & userIdFilter,
+        var filters = idFilter & versionFilter & userIdFilter;
+
+        return Update(filters, lot, token);
+    }
+
+    public Task Update(Lot lot, CancellationToken token)
+    {
+        var version = lot.Version;
+
+        lot.Version++;
+        lot.Updated = DateTime.UtcNow;
+
+        var idFilter = Builders<Lot>.Filter.Eq(x => x.Id, lot.Id);
+        var versionFilter = Builders<Lot>.Filter.Eq(x => x.Version, version);
+
+        var filters = idFilter & versionFilter;
+
+        return Update(filters, lot, token);
+    }
+
+    private Task Update(FilterDefinition<Lot> filters, Lot lot, CancellationToken cancellationToken)
+    {
+        return _lots.UpdateOneAsync(
+            filters,
             Builders<Lot>.Update
                 .Set(x => x.Product, lot.Product)
                 .Set(x => x.Winner, lot.Winner)
@@ -123,7 +146,7 @@ public class LotRepository : ILotRepository
                 .Set(x => x.Status, lot.Status)
                 .Set(x => x.Version, lot.Version)
                 .Set(x => x.Updated, lot.Updated),
-            cancellationToken: token
+            cancellationToken: cancellationToken
         );
     }
 }

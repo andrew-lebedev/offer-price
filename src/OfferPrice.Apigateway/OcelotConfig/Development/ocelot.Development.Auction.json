@@ -97,6 +97,20 @@
                 }
             ],
             "SwaggerKey": "auction"
+        },
+
+        {
+            "UpstreamPathTemplate": "/api/v1/locations",
+            "UpstreamHttpMethod": [ "Get" ],
+            "DownstreamPathTemplate": "/api/v1/locations",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5011
+                }
+            ],
+            "SwaggerKey": "auction"
         }
     ]
 }
