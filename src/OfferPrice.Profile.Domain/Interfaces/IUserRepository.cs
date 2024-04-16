@@ -9,6 +9,8 @@ public interface IUserRepository
 
     Task<User> GetByEmailAndPassword(string email, string password, CancellationToken token);
 
+    Task<User> GetByEmail(string email, CancellationToken cancellationToken);
+
     Task Create(User user, CancellationToken token);
 
     Task Update(User user, CancellationToken token);

@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Events.Events;
 using OfferPrice.Profile.Api.Models;
-using OfferPrice.Profile.Domain.Interfaces;
-using OfferPrice.Profile.Domain.Models;
+using OfferPrice.Profile.Application.UserOperations.LoginUser;
+using OfferPrice.Profile.Application.UserOperations.RegisterUser;
 
 namespace OfferPrice.Profile.Api.Controllers.v1;
 
@@ -14,33 +15,27 @@ namespace OfferPrice.Profile.Api.Controllers.v1;
 public class AuthController : ControllerBase
 {
     private readonly IMapper _mapper;
-    private readonly IUserRepository _userRepository;
-    private readonly IRoleRepository _roleRepository;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IMediator _mediator;
 
     public AuthController(
-        IUserRepository userRepository,
-        IRoleRepository roleRepository,
         IMapper mapper,
-        IPublishEndpoint publishEndpoint)
+        IPublishEndpoint publishEndpoint,
+        IMediator mediator)
     {
         _mapper = mapper;
-        _userRepository = userRepository;
-        _roleRepository = roleRepository;
         _publishEndpoint = publishEndpoint;
+        _mediator = mediator;
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserRequest request, CancellationToken token)
     {
-        var userEntity = await _userRepository.GetByEmailAndPassword(request.Email, request.Password, token);
+        var cmd = _mapper.Map<LoginUserCommand>(request);
 
-        if (userEntity == null)
-        {
-            return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
-        }
+        var commandResponse = await _mediator.Send(cmd, token);
 
-        var userResponse = _mapper.Map<LoginUserResponse>(userEntity);
+        var userResponse = _mapper.Map<LoginUserResponse>(commandResponse);
 
         return Ok(userResponse);
     }
@@ -48,15 +43,11 @@ public class AuthController : ControllerBase
     [HttpPost("registration")]
     public async Task<IActionResult> Registration([FromBody] RegistrationUserRequest createUserRequest, CancellationToken token)
     {
-        var user = _mapper.Map<Domain.Models.User>(createUserRequest);
+        var cmd = _mapper.Map<RegisterUserCommand>(createUserRequest);
 
-        var role = await _roleRepository.GetByName("user", token);
+        var user = await _mediator.Send(cmd, token);
 
-        user.Roles = new List<Role> { role };
-
-        await _userRepository.Create(user, token);
-
-        await _publishEndpoint.Publish<UserCreatedEvent>(new(user.ToEvent()));
+        await _publishEndpoint.Publish<UserCreatedEvent>(new(user.ToEvent()), token);
 
         return Ok();
     }

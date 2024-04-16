@@ -1,3 +1,4 @@
+using OfferPrice.Auction.Application.Models;
 using OfferPrice.Auction.Domain.Enums;
 
 namespace OfferPrice.Auction.Api.Models.Responses;
@@ -7,7 +8,7 @@ public class AuctionFinishedResponse
     public AuctionFinishedResponse(Domain.Models.Lot lot)
     {
         Status = lot.Status;
-        Winner = User.FromDomain(lot.Winner);
+        //Winner = User.FromDomain(lot.Winner);
         ProductPrice = lot.Price;
     }
 

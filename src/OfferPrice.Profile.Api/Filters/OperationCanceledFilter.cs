@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using OfferPrice.Profile.Application.Exceptions;
 
 namespace OfferPrice.Profile.Api.Filters
 {
@@ -12,16 +13,23 @@ namespace OfferPrice.Profile.Api.Filters
         {
             this.problemDetailsFactory = problemDetailsFactory;
         }
+
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception is OperationCanceledException)
+            context.Result = context.Exception switch
             {
-                context.Result = new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 400));
-            }
-            else
-            {
-                context.Result = new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 500));
-            }
+                OperationCanceledException =>
+                    new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 400, context.Exception.Message)),
+
+                UserNotFoundException=>
+                    new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 404, context.Exception.Message)),
+
+                UserEmailException =>
+                    new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 409, context.Exception.Message)),
+
+                _ =>
+                    new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 500))
+            };
         }
     }
 }

@@ -1,3 +1,4 @@
+using OfferPrice.Auction.Application.Models;
 using System;
 using System.Linq;
 
@@ -9,7 +10,7 @@ public class RaiseBetResponse
     {
         var lastBet = lot.BetHistory.Last();
 
-        BetOwner = User.FromDomain(lastBet.User);
+        //BetOwner = User.FromDomain(lastBet.User);
         BetTimestamp = lastBet.Timestamp;
         ProductPrice = lot.Price;
         TimeToFinish = timeToFinish;

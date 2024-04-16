@@ -22,17 +22,6 @@ public class User
 
     public List<Role> Roles { get; set; }
 
-    public Events.Models.User ToEvent()
-    {
-        return new()
-        {
-            Id = Id,
-            Name = Name,
-            LastName = LastName,
-            MiddleName = MiddleName,
-            Email = Email,
-            Phone = Phone
-        };
-    }
+
 }
 

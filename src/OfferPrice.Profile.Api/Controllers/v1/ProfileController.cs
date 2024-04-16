@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using OfferPrice.Common;
 using OfferPrice.Profile.Api.Models;
-using OfferPrice.Profile.Domain.Interfaces;
+using OfferPrice.Profile.Application.UserOperations.GetUser;
+using OfferPrice.Profile.Application.UserOperations.UpdateUser;
 
 namespace OfferPrice.Profile.Api.Controllers.v1;
 
@@ -11,11 +14,18 @@ namespace OfferPrice.Profile.Api.Controllers.v1;
 [ApiVersion("1.0")]
 public class ProfileController : ControllerBase
 {
-    private readonly IUserRepository _users;
+    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-    public ProfileController(IUserRepository users, IMapper mapper)
+
+
+    public ProfileController(
+        IPublishEndpoint publishEndpoint,
+        IMediator mediator,
+        IMapper mapper)
     {
-        _users = users;
+        _publishEndpoint = publishEndpoint;
+        _mediator = mediator;
         _mapper = mapper;
     }
 
@@ -24,14 +34,11 @@ public class ProfileController : ControllerBase
     {
         var clientId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
 
-        var user = await _users.Get(clientId, token);
+        var cmd = new GetUserCommand() { ClientId = clientId };
 
-        if (user == null)
-        {
-            return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
-        }
+        var user = await _mediator.Send(cmd, token);
 
-        var userResponse = _mapper.Map<Models.User>(user);
+        var userResponse = _mapper.Map<GetUserResponse>(user);
 
         return Ok(userResponse);
     }
@@ -41,17 +48,12 @@ public class ProfileController : ControllerBase
     {
         var clientId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
 
-        var user = await _users.Get(clientId, token);
+        var cmd = _mapper.Map<UpdateUserCommand>(updateUserRequest);
+        cmd.UserId = clientId;
 
-        if (user == null)
-        {
-            return NotFound(ProblemDetailsFactory.CreateProblemDetails(HttpContext, 404));
-        }
+        await _mediator.Send(cmd, token);
 
-        var update = _mapper.Map(updateUserRequest, user);
-        await _users.Update(update, token);
-
-        //_producer.SendMessage(new UserUpdatedEvent(update.ToEvent()));
+        await _publishEndpoint.Publish(new(), token);
 
         return Ok();
     }

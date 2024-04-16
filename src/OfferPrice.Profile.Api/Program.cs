@@ -20,6 +20,9 @@ builder.Services.RegisterDatabase(settings.Database);
 
 builder.Services.AddRMQ(settings.RabbitMq);
 
+builder.Services.AddMediatR(
+    cfg => cfg.RegisterServicesFromAssemblies(typeof(OfferPrice.Profile.Application.Assembly).Assembly));
+
 builder.Services.AddProblemDetails();
 builder.Services.AddScoped<OperationCanceledFilter>();
 builder.Services.AddControllers(options =>

@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using OfferPrice.Auction.Domain.Interfaces;
-using System.Threading.Tasks;
-using System.Threading;
+using OfferPrice.Auction.Api.Models.Responses;
+using OfferPrice.Auction.Application.LikeOperations.CreateLike;
+using OfferPrice.Auction.Application.LikeOperations.DeleteLike;
+using OfferPrice.Auction.Application.LikeOperations.GetLike;
 using OfferPrice.Common;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OfferPrice.Auction.Api.Controllers.v1;
 
@@ -12,19 +16,20 @@ namespace OfferPrice.Auction.Api.Controllers.v1;
 [Route("api/v{version:apiVersion}/lots/{lotId}/likes")]
 public class LikeController : ControllerBase
 {
-    private readonly ILikeRepository _likeRepository;
+    private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public LikeController(ILikeRepository likeRepository, IMapper mapper)
+    public LikeController(IMediator mediator, IMapper mapper)
     {
-        _likeRepository = likeRepository;
+        _mediator = mediator;
         _mapper = mapper;
     }
 
     [HttpGet("count")]
     public async Task<IActionResult> GetCountsOfLikes([FromRoute] string lotId, CancellationToken token)
     {
-        var count = await _likeRepository.GetCount(lotId, token);
+        var cmd = new GetCountLikeCommand() { LotId = lotId };
+        var count = await _mediator.Send(cmd, token);
 
         return Ok(count);
     }
@@ -34,15 +39,11 @@ public class LikeController : ControllerBase
     {
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
 
-        var like = new Domain.Models.Like
-        {
-            LotId = lotId,
-            UserId = userId
-        };
+        var cmd = new CreateLikeCommand() { LotId = lotId, UserId = userId };
 
-        await _likeRepository.Create(like, token);
+        await _mediator.Send(cmd, token);
 
-        return Ok(like);
+        return Ok();
     }
 
     [HttpDelete]
@@ -50,7 +51,9 @@ public class LikeController : ControllerBase
     {
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
 
-        await _likeRepository.Delete(lotId, userId, token);
+        var cmd = new DeleteLikeCommand() { LotId =  lotId, UserId = userId };
+
+        await _mediator.Send(cmd, token);
 
         return Ok();
     }
@@ -60,14 +63,11 @@ public class LikeController : ControllerBase
     {
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
 
-        var like = await _likeRepository.Get(lotId, userId, token);
+        var cmd = new GetLikeCommand() { LotId = lotId, UserId = userId };
 
-        if (like == null)
-        {
-            return NotFound();
-        }
+        var like = await _mediator.Send(cmd, token);
 
-        var likeResponse = _mapper.Map<Models.Like>(like);
+        var likeResponse = _mapper.Map<LikeResponse>(like);
 
         return Ok(likeResponse);
     }

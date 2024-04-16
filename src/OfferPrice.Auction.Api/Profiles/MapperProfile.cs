@@ -1,6 +1,10 @@
 ﻿using AutoMapper;
-using OfferPrice.Auction.Api.Models;
 using OfferPrice.Auction.Api.Models.Requests;
+using OfferPrice.Auction.Api.Models.Responses;
+using OfferPrice.Auction.Application.LocationOperations.CreateLocation;
+using OfferPrice.Auction.Application.LotOperations.CreateLot;
+using OfferPrice.Auction.Application.LotOperations.GetLot;
+using OfferPrice.Auction.Application.Models;
 
 namespace OfferPrice.Auction.Api.Profiles
 {
@@ -8,14 +12,20 @@ namespace OfferPrice.Auction.Api.Profiles
     {
         public MapperProfile()
         {
+            CreateMap<LotRequest, CreateLotCommand>();
+            CreateMap<Lot, Domain.Models.Lot>().ReverseMap();
+            CreateMap<ProductRequest, Product>();
+            CreateMap<Product, Domain.Models.Product>();
+            
+            CreateMap<Lot, GetLotResponse>();
 
-            CreateMap<Domain.Models.Lot, Lot>();
+            CreateMap<FindRegularLotsRequest, GetRegularLotsCommand>();
+            CreateMap<FindUserLotsRequest, GetUserLotsCommand>();
 
-            CreateMap<Domain.Models.Bet, Bet>();
+            CreateMap<Category, Domain.Models.Category>().ReverseMap();
 
-            CreateMap<ProductRequest, Domain.Models.Product>();
-
-            CreateMap<LotRequest, Domain.Models.Lot>();
+            CreateMap<Location, Domain.Models.Location>().ReverseMap();
+            CreateMap<CreateLocationRequest, CreateLocationCommand>();
         }
     }
 }

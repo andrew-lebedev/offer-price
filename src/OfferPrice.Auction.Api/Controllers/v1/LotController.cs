@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using OfferPrice.Auction.Api.Models;
 using OfferPrice.Auction.Api.Models.Requests;
 using OfferPrice.Auction.Api.Models.Responses;
-using OfferPrice.Auction.Domain.Interfaces;
+using OfferPrice.Auction.Application.LotOperations.CreateLot;
+using OfferPrice.Auction.Application.LotOperations.DeleteLot;
+using OfferPrice.Auction.Application.LotOperations.DeliverLot;
+using OfferPrice.Auction.Application.LotOperations.GetLot;
+using OfferPrice.Auction.Application.LotOperations.UpdateLot;
 using OfferPrice.Common;
-using OfferPrice.Common.Extensions;
 using OfferPrice.Events.Events;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,28 +21,26 @@ namespace OfferPrice.Auction.Api.Controllers.v1;
 [Route("api/v{version:apiVersion}/lots")]
 public class LotController : ControllerBase
 {
-    private readonly ILotRepository _lots;
-    private readonly IUserRepository _users;
     private readonly IPublishEndpoint _publishEndpoint;
-
+    private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
     public LotController(
-        ILotRepository lots,
-        IUserRepository users,
         IMapper mapper,
-        IPublishEndpoint publishEndpoint)
+        IPublishEndpoint publishEndpoint,
+        IMediator mediator)
     {
-        _lots = lots;
-        _users = users;
         _mapper = mapper;
         _publishEndpoint = publishEndpoint;
+        _mediator = mediator;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] FindLotsRequest request, CancellationToken token)
+    public async Task<IActionResult> Get([FromQuery] FindRegularLotsRequest request, CancellationToken token)
     {
-        var result = await _lots.Find(request.ToQuery(), token);
+        var cmd = _mapper.Map<GetRegularLotsCommand>(request);
+        
+        var result = await _mediator.Send(cmd, token);
 
         return Ok(new FindLotsResponse(result));
     }
@@ -47,30 +48,32 @@ public class LotController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id, CancellationToken token)
     {
-        var lot = await _lots.Get(id, token);
+        var cmd = new GetLotCommand() { Id = id };
 
-        if (lot == null)
-        {
-            return NotFound();
-        }
+        var lot = await _mediator.Send(cmd, token);
 
-        return Ok(_mapper.Map<Lot>(lot));
+        return Ok(_mapper.Map<GetLotResponse>(lot));
+    }
+
+    [HttpGet("user")]
+    public async Task<IActionResult> GetUserBets([FromQuery] FindUserLotsRequest request, CancellationToken cancellationToken)
+    {
+        var cmd = _mapper.Map<GetUserLotsCommand>(request);
+
+        var lots = await _mediator.Send(cmd, cancellationToken);
+
+        return Ok(lots);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] LotRequest createLotRequest, CancellationToken cancellationToken)
     {
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
-        var user = await _users.Get(userId, cancellationToken);
 
-        if (user == null)
-        {
-            return Conflict();
-        }
+        var cmd = _mapper.Map<CreateLotCommand>(createLotRequest);
+        cmd.UserId = userId;
 
-        var lot = _mapper.Map<Domain.Models.Lot>(createLotRequest);
-
-        await _lots.Create(lot, cancellationToken);
+        await _mediator.Send(cmd, cancellationToken);
 
         return Ok();
     }
@@ -79,10 +82,10 @@ public class LotController : ControllerBase
     public async Task<IActionResult> Update([FromBody] LotRequest updateLotRequest, CancellationToken cancellationToken)
     {
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+        var cmd = _mapper.Map<UpdateLotCommand>(updateLotRequest);
+        cmd.UserId = userId;
 
-        var lot = _mapper.Map<Domain.Models.Lot>(updateLotRequest);
-
-        await _lots.Update(lot, userId, cancellationToken);
+        await _mediator.Send(cmd, cancellationToken);
 
         return Ok();
     }
@@ -90,22 +93,11 @@ public class LotController : ControllerBase
     [HttpPost("{id}/delivery")]
     public async Task<IActionResult> Deliver([FromRoute] string id, CancellationToken token)
     {
-        var lot = await _lots.Get(id, token);
-
-        if (lot == null)
-        {
-            return NotFound();
-        }
-
-        if (!lot.IsSold())
-        {
-            return Conflict();
-        }
-
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
 
-        lot.Deliver();
-        await _lots.Update(lot, userId, token);
+        var cmd = new DeliverLotCommand() { Id = id, UserId = userId };
+
+        var lot = await _mediator.Send(cmd, token);
 
         await _publishEndpoint.Publish<LotStatusUpdatedEvent>(
             new
@@ -118,52 +110,14 @@ public class LotController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("{id}/schedule")]
-    public async Task<IActionResult> Schedule([FromRoute] string id, [FromBody] ScheduleLotRequest request, CancellationToken cancellationToken)
-    {
-        var lot = await _lots.Get(id, cancellationToken);
-        if (lot == null)
-        {
-            return NotFound();
-        }
-
-        var user = await _users.Get(request.UserId, cancellationToken);
-        if (user == null)
-        {
-            return Conflict();
-        }
-
-        if (lot.Product.User.Id != request.UserId)
-        {
-            return Conflict();
-        }
-
-        if (lot.IsStarted())
-        {
-            return Conflict();
-        }
-
-        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
-
-        lot.Schedule(request.Start.RemoveSeconds());
-        await _lots.Update(lot, userId, cancellationToken);
-
-        //_producer.SendMessage(new LotStatusUpdatedEvent
-        //{
-        //    LotId = lot.Id,
-        //    ProductId = lot.Product.Id,
-        //    Status = lot.Status.ToString()
-        //});
-
-        return Ok();
-    }
-
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAuction([FromRoute] string id, CancellationToken token)
     {
         var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
 
-        await _lots.Delete(id, userId, token);
+        var cmd = new DeleteLotCommand() { Id = id, UserId = userId };
+
+        await _mediator.Send(cmd, token);
 
         return Ok();
     }
