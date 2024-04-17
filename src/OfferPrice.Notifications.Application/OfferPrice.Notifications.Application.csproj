@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OfferPrice.Common\OfferPrice.Common.csproj" />
+    <ProjectReference Include="..\OfferPrice.Notifications.Infrastructure\OfferPrice.Notifications.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -16,18 +16,18 @@ public class StartAuctionJob : BackgroundService
 {
     private readonly ILotRepository _lotRepository;
     private readonly IHubContext<AuctionHub> _hubContext;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IBus _bus;
     private readonly AuctionSettings _settings;
 
     public StartAuctionJob(
         ILotRepository lotRepository,
         IHubContext<AuctionHub> hubContext,
-        IPublishEndpoint publishEndpoint,
+        IBus bus,
         AuctionSettings settings)
     {
         _lotRepository = lotRepository;
         _hubContext = hubContext;
-        _publishEndpoint = publishEndpoint;
+        _bus = bus;
         _settings = settings;
     }
 
@@ -57,7 +57,7 @@ public class StartAuctionJob : BackgroundService
                     cancellationToken
                 );
 
-                await _publishEndpoint.Publish<LotStatusUpdatedEvent>(
+                await _bus.Publish<LotStatusUpdatedEvent>(
                     new()
                     {
                         LotId = lot.Id,
@@ -65,6 +65,14 @@ public class StartAuctionJob : BackgroundService
                         Status = lot.Status.ToString()
                     },
                     cancellationToken);
+
+                await _bus.Publish<NotificationCreateEvent>(new()
+                {
+                    UserId = lot.Product.User.Id,
+                    Subject = "OfferPrice",
+                    Body = $"Auction is starting on lot with product {lot.Product.Name}"
+                },
+                cancellationToken);
             }
             catch
             {

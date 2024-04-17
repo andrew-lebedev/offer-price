@@ -13,6 +13,11 @@ public class RoleRepository : IRoleRepository
         _roles = database.GetCollection<Role>("roles");
     }
 
+    public Task Create(Role role, CancellationToken cancellationToken)
+    {
+        return _roles.InsertOneAsync(role, cancellationToken: cancellationToken);
+    }
+
     public Task<List<Role>> Get(CancellationToken token)
     {
         return _roles.AsQueryable().ToListAsync(token);

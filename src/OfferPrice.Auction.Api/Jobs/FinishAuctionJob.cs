@@ -16,18 +16,18 @@ public class FinishAuctionJob : BackgroundService
 {
     private readonly ILotRepository _lotRepository;
     private readonly IHubContext<AuctionHub> _hubContext;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IBus _bus;
     private readonly AuctionSettings _settings;
 
     public FinishAuctionJob(
         ILotRepository lotRepository,
         IHubContext<AuctionHub> hubContext,
-        IPublishEndpoint publishEndpoint,
+        IBus bus,
         AuctionSettings settings)
     {
         _lotRepository = lotRepository;
         _hubContext = hubContext;
-        _publishEndpoint = publishEndpoint;
+        _bus = bus;
         _settings = settings;
     }
 
@@ -57,14 +57,32 @@ public class FinishAuctionJob : BackgroundService
                     cancellationToken
                 );
 
-                await _publishEndpoint.Publish<LotStatusUpdatedEvent>(
+                // todo: вынести куда нибудь?
+
+                await _bus.Publish<LotStatusUpdatedEvent>(
                     new()
                     {
                         LotId = lot.Id,
                         ProductId = lot.Product.Id,
                         Status = lot.Status.ToString()
-                    }, 
+                    },
                     cancellationToken);
+
+                await _bus.Publish<NotificationCreateEvent>(new()
+                {
+                    UserId = lot.Product.User.Id,
+                    Subject = "OfferPrice",
+                    Body = $"Auction is over on lot with product {lot.Product.Name}"
+                },
+                cancellationToken);
+
+                await _bus.Publish<NotificationCreateEvent>(new()
+                {
+                    UserId = lot.Winner.Id,
+                    Subject = "OfferPrice",
+                    Body = $"Auction is over on lot with product {lot.Product.Name}. You are the winner!"
+                },
+                cancellationToken);
             }
             catch
             {

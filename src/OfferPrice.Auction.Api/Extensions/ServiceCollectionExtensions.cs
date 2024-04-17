@@ -55,6 +55,9 @@ public static class ServiceCollectionExtensions
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.AddRMQHost(settings);
+
+                cfg.AddRMQProducer<NotificationCreateEvent>(settings);
+
                 cfg.AddRMQConsumer<UserCreatedConsumer, UserCreatedEvent>(context, settings);
                 cfg.AddRMQConsumer<UserUpdatedConsumer, UserUpdatedEvent>(context, settings);
             });
