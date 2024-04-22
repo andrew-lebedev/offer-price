@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using OfferPrice.Auction.Domain.Interfaces;
 using OfferPrice.Auction.Domain.Models;
+using OfferPrice.Common;
 
 namespace OfferPrice.Auction.Infrastructure.Repositories;
 
@@ -37,6 +38,28 @@ public class LikeRepository : ILikeRepository
         return _likes.Find(
             Builders<Like>.Filter.Where(x => x.UserId == userId && x.LotId == lotId)
         ).FirstOrDefaultAsync(token);
+    }
+
+    public async Task<PageResult<string>> Get(string userId, Paging paging, CancellationToken cancellationToken)
+    {
+        var userFilter = Builders<Like>.Filter.Eq(x => x.UserId, userId);
+        var sort = Builders<Like>.Sort.Descending(x => x.CreateDate);
+
+        var totalTask = _likes.CountDocumentsAsync(userFilter, cancellationToken: cancellationToken);
+        var likeTasks = _likes
+            .Find(userFilter)
+            .Sort(sort)
+            .Skip((paging.Page - 1) * paging.PerPage)
+            .Limit(paging.PerPage)
+            .ToListAsync(cancellationToken);
+
+        await Task.WhenAll(totalTask, likeTasks);
+
+        return new PageResult<string>(
+            paging.Page,
+            paging.PerPage,
+            totalTask.Result,
+            likeTasks.Result.Select(x => x.LotId).ToList());
     }
 
     public Task<long> GetCount(string lotId, CancellationToken token)

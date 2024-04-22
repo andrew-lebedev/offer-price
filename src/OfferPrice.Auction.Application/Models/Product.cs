@@ -4,6 +4,11 @@ namespace OfferPrice.Auction.Application.Models;
 
 public class Product
 {
+    public Product()
+    {
+        Id = Guid.NewGuid().ToString();
+    }
+
     public Product(Product product)
     {
         Id = product.Id;

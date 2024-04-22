@@ -11,7 +11,6 @@ public class ProductRequest
 
     public string Description { get; set; }
 
-    [Required]
     public ICollection<string> Images { get; set; }
 
     [Required]
@@ -22,7 +21,7 @@ public class ProductRequest
     public string Brand { get; set; }
 
     [Required]
-    [Range(0, (double)decimal.MaxValue, ErrorMessage = "Invalid minimal price")]
+    [Range(1, (double)decimal.MaxValue, ErrorMessage = "Invalid minimal price")]
     public decimal Price { get; set; }
 
     public ProductStatus State { get; set; }

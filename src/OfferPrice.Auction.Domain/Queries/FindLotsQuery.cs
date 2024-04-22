@@ -5,9 +5,13 @@ namespace OfferPrice.Auction.Domain.Queries;
 
 public class FindLotsQuery
 {
+    public string Searching { get; set; }
+
     public string ProductOwnerId { get; set; }
 
     public string WinnerId { get; set; }
+
+    public string BetsWithUserId { get; set; }
 
     public LotStatus? LotStatus { get; set; }
 

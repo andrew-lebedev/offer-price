@@ -9,7 +9,7 @@ public class AuctionFinishedResponse
     {
         Status = lot.Status;
         //Winner = User.FromDomain(lot.Winner);
-        ProductPrice = lot.Price;
+        ProductPrice = lot.CurrentPrice;
     }
 
     public LotStatus Status { get; set; }

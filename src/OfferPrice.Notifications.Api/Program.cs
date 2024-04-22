@@ -2,6 +2,9 @@ using OfferPrice.Common.Extensions;
 using OfferPrice.Notifications.Api.Extensions;
 using OfferPrice.Notifications.Api.Filters;
 using OfferPrice.Notifications.Api.Settings;
+using OfferPrice.Notifications.Domain.Interfaces;
+using OfferPrice.Notifications.Infrastructure.Options;
+using OfferPrice.Notifications.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,9 @@ builder.Services.AddRMQ(settings.RabbitMq);
 
 builder.Services.AddMediatR(
     cfg => cfg.RegisterServicesFromAssemblies(typeof(OfferPrice.Notifications.Application.Assembly).Assembly));
+
+builder.Services.AddSingleton<IEmailProviderService, EmailProviderService>();
+builder.Services.Configure<EmailOptions>(config.GetSection("Email"));
 
 builder.Services.AddProblemDetails();
 builder.Services.AddScoped<ExceptionFilter>();

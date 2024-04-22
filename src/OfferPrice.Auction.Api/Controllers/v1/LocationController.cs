@@ -12,7 +12,7 @@ namespace OfferPrice.Auction.Api.Controllers.v1;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/lots")]
+[Route("api/v{version:apiVersion}/locations")]
 public class LocationController : ControllerBase
 {
     private readonly IMediator _mediator;

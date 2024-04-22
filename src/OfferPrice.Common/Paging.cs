@@ -2,6 +2,10 @@ namespace OfferPrice.Common;
 
 public class Paging
 {
+    public Paging()
+    {
+    }
+
     public Paging(int page, int perPage)
     {
         Page = page;

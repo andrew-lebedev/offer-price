@@ -1,6 +1,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OfferPrice.Auction.Api.Hubs;
 using OfferPrice.Auction.Api.Models.Responses;
 using OfferPrice.Auction.Api.Settings;
@@ -18,17 +19,20 @@ public class StartAuctionJob : BackgroundService
     private readonly IHubContext<AuctionHub> _hubContext;
     private readonly IBus _bus;
     private readonly AuctionSettings _settings;
+    private readonly ILogger<StartAuctionJob> _logger;
 
     public StartAuctionJob(
         ILotRepository lotRepository,
         IHubContext<AuctionHub> hubContext,
         IBus bus,
-        AuctionSettings settings)
+        AuctionSettings settings,
+        ILogger<StartAuctionJob> logger)
     {
         _lotRepository = lotRepository;
         _hubContext = hubContext;
         _bus = bus;
         _settings = settings;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,6 +46,7 @@ public class StartAuctionJob : BackgroundService
 
     private async Task Handle(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Get unstarted lots");
         var lots = await _lotRepository.GetNonStarted(DateTime.UtcNow, cancellationToken); // todo: make batches
 
         foreach (var lot in lots)
@@ -50,10 +55,11 @@ public class StartAuctionJob : BackgroundService
 
             try
             {
+                _logger.LogInformation($"Lot with id: {lot.Id} is started");
                 await _lotRepository.Update(lot, cancellationToken); // todo: add concurrency
                 await _hubContext.Clients.Group(lot.Id).SendAsync(
                     nameof(IAuctionClient.OnAuctionStarted),
-                    new AuctionStartedResponse(lot.Price, lot.Updated.AddSeconds(_settings.BetIntervalInSec)),
+                    new AuctionStartedResponse(lot.CurrentPrice, lot.Updated.AddSeconds(_settings.BetIntervalInSec)),
                     cancellationToken
                 );
 

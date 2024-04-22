@@ -86,6 +86,23 @@
             "SwaggerKey": "auction"
         },
         {
+            "UpstreamPathTemplate": "/api/v1/lots/{everything}",
+            "UpstreamHttpMethod": [ "Get" ],
+            "DownstreamPathTemplate": "/api/v1/lots/{everything}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5011
+                }
+            ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            },
+            "SwaggerKey": "auction"
+        },
+        {
             "UpstreamPathTemplate": "/api/v1/categories",
             "UpstreamHttpMethod": [ "Get" ],
             "DownstreamPathTemplate": "/api/v1/categories",

@@ -33,7 +33,7 @@ public class NotificationCreateConsumer : IConsumer<NotificationCreateEvent>
 
         if (user == null)
         {
-            _logger.LogInformation("User {lot_id} is already exists", user.Id);
+            _logger.LogInformation($"User {user.Id} doesn't exist");
             return;
         }
 
@@ -49,6 +49,9 @@ public class NotificationCreateConsumer : IConsumer<NotificationCreateEvent>
 
         await _notificationRepository.Create(notification, CancellationToken.None);
 
-        await _emailProviderService.SendEmail(user.Email, notification);
+        if (user.Settings.IsNotificationEnabled)
+        {
+            await _emailProviderService.SendEmail(user.Email, notification);
+        }
     }
 }

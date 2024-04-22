@@ -12,7 +12,7 @@ public class RaiseBetResponse
 
         //BetOwner = User.FromDomain(lastBet.User);
         BetTimestamp = lastBet.Timestamp;
-        ProductPrice = lot.Price;
+        ProductPrice = lot.CurrentPrice;
         TimeToFinish = timeToFinish;
     }
     public User BetOwner { get; set; }

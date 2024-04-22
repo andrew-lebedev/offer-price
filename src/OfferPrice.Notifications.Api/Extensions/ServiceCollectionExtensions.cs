@@ -6,6 +6,7 @@ using OfferPrice.Events.RabbitMq;
 using OfferPrice.Events.RabbitMq.Options;
 using OfferPrice.Notifications.Api.Settings;
 using OfferPrice.Notifications.Domain.Interfaces;
+using OfferPrice.Notifications.Infrastructure.Consumers;
 using OfferPrice.Notifications.Infrastructure.Repositories;
 
 namespace OfferPrice.Notifications.Api.Extensions;
@@ -14,6 +15,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection RegisterDatabase(this IServiceCollection services, DatabaseSettings settings)
     {
+        services.AddSingleton(settings);
+
         services.AddSingleton(
             _ => new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName));
 
@@ -29,12 +32,14 @@ public static class ServiceCollectionExtensions
         {
             x.AddConsumer<UserCreatedConsumer>();
             x.AddConsumer<UserUpdatedConsumer>();
+            x.AddConsumer<NotificationCreateConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.AddRMQHost(settings);
                 cfg.AddRMQConsumer<UserCreatedConsumer, UserCreatedEvent>(context, settings);
                 cfg.AddRMQConsumer<UserUpdatedConsumer, UserUpdatedEvent>(context, settings);
+                cfg.AddRMQConsumer<NotificationCreateConsumer, NotificationCreateEvent>(context, settings);
             });
         });
 

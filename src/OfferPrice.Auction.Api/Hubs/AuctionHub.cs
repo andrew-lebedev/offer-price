@@ -80,7 +80,7 @@ public class AuctionHub : Hub<IAuctionClient>
         }
         else if (lot.IsStarted())
         {
-            await Clients.Caller.OnAuctionStarted(new AuctionStartedResponse(lot.Price, lot.Updated.AddSeconds(_settings.BetIntervalInSec)));
+            await Clients.Caller.OnAuctionStarted(new AuctionStartedResponse(lot.CurrentPrice, lot.Updated.AddSeconds(_settings.BetIntervalInSec)));
         }
         else if (lot.IsFinished())
         {

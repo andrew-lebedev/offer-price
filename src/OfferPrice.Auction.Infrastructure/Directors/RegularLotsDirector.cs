@@ -21,6 +21,7 @@ public class RegularLotsDirector
     public void Build()
     {
         _queryFilterBuilder
+            .AddSearching()
             .AddCategory()
             .AddLocation()
             .AddMaxPrice()

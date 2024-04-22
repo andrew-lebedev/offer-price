@@ -14,7 +14,8 @@ public class MappingProfile : AutoMapper.Profile
             .ReverseMap();
 
         CreateMap<RegistrationUserRequest, RegisterUserCommand>();
-        CreateMap<RegisterUserCommand, Domain.Models.User>();
+        CreateMap<RegisterUserCommand, Domain.Models.User>()
+            .ForMember(x => x.PasswordHash, y => y.MapFrom(k => k.Password));
 
         CreateMap<LoginUserRequest, LoginUserCommand>();
         CreateMap<User, LoginUserResponse>();

@@ -34,7 +34,7 @@ public class NotificationController : ControllerBase
 
         var result = await _mediator.Send(cmd, cancellationToken);
 
-        return Ok(_mapper.Map<NotificationResponse>(result));
+        return Ok(new NotificationResponse(result));
     }
 
     [HttpPost("read")]

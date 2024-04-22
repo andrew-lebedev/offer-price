@@ -19,7 +19,9 @@ public class Lot
 
     public User Winner { get; set; }
 
-    public decimal Price { get; set; }
+    public decimal CurrentPrice { get; set; }
+
+    public decimal FixPrice { get; set; }
 
     public LotStatus Status { get; set; }
 
@@ -49,7 +51,7 @@ public class Lot
     {
         var bet = new Bet(user, raise);
 
-        Price += raise;
+        CurrentPrice += raise;
         BetHistory.Add(bet);
 
         return bet;

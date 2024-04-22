@@ -14,6 +14,11 @@ public class CategoryController : Controller
 {
     private readonly IMediator _mediator;
 
+    public CategoryController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {

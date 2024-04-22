@@ -113,7 +113,7 @@ public class QueryFilterBuilder : IQueryFilterBuilder<FilterDefinition<Lot>>
 
     public IQueryFilterBuilder<FilterDefinition<Lot>> AddWinner()
     {
-        var filter =  string.IsNullOrWhiteSpace(_findLotsQuery.WinnerId)
+        var filter = string.IsNullOrWhiteSpace(_findLotsQuery.WinnerId)
             ? Builders<Lot>.Filter.Empty
             : Builders<Lot>.Filter.Eq(l => l.Winner.Id, _findLotsQuery.WinnerId);
 
@@ -125,5 +125,27 @@ public class QueryFilterBuilder : IQueryFilterBuilder<FilterDefinition<Lot>>
     public FilterDefinition<Lot> GetFilters()
     {
         return Builders<Lot>.Filter.And(_filters);
+    }
+
+    public IQueryFilterBuilder<FilterDefinition<Lot>> AddSearching()
+    {
+        var filter = string.IsNullOrWhiteSpace(_findLotsQuery.Searching)
+            ? Builders<Lot>.Filter.Empty
+            : Builders<Lot>.Filter.Text(_findLotsQuery.Searching);
+
+        _filters.Add(filter);
+
+        return this;
+    }
+
+    public IQueryFilterBuilder<FilterDefinition<Lot>> AddUserBets()
+    {
+        var filter = string.IsNullOrWhiteSpace(_findLotsQuery.BetsWithUserId)
+            ? Builders<Lot>.Filter.Empty
+            : Builders<Lot>.Filter.ElemMatch(x => x.BetHistory, y => y.User.Id == _findLotsQuery.BetsWithUserId);
+
+        _filters.Add(filter);
+
+        return this;
     }
 }

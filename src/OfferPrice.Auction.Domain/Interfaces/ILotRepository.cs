@@ -10,12 +10,14 @@ public interface ILotRepository
 {
     Task<PageResult<Lot>> Find<T, K>(IQueryFilterBuilder<T> filterBuilder, IQuerySortBuilder<K> sortBuilder, Paging paging, CancellationToken token);
     Task<Lot> Get(string id, CancellationToken token);
-    Task<Lot> GetByProductId(string productId, CancellationToken token);
     Task Create(Lot lot, CancellationToken token);
     Task Update(Lot lot, string userId, CancellationToken token);
     Task Update(Lot lot, CancellationToken cancellationToken);
     Task Delete(string id, string userId, CancellationToken token);
     Task<List<Lot>> GetNonStarted(DateTime until, CancellationToken cancellationToken);
     Task<List<Lot>> GetNonFinished(DateTime until, CancellationToken cancellationToken);
+    Task<IEnumerable<Lot>> GetNonPlanned(CancellationToken cancellationToken);
+    Task<IEnumerable<Lot>> GetSameLots(Lot lot, CancellationToken cancellationToken);
+    Task<IEnumerable<Lot>> GetFavorities(IEnumerable<string> lotIds, CancellationToken cancellationToken);
 }
 

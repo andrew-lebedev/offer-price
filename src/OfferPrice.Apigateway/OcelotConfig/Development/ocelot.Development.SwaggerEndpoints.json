@@ -43,6 +43,17 @@
                     "Url": "https://localhost:7284/swagger/v1/swagger.json"
                 }
             ]
+        },
+        {
+            "Key": "notifications",
+            "TransformByOcelotConfig": true,
+            "Config": [
+                {
+                    "Name": "Notification API",
+                    "Version": "v1",
+                    "Url": "https://localhost:5193/swagger/v1/swagger.json"
+                }
+            ]
         }
     ]
 }

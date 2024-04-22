@@ -21,6 +21,8 @@ public class GetNotificationsCommandHandler : IRequestHandler<GetNotificationsCo
     {
         var result = await _notificationRepository.Get(request.UserId, request.Paging, cancellationToken);
 
-        return _mapper.Map<PageResult<Notification>>(result);
+        var items = _mapper.Map<List<Notification>>(result.Items);
+
+        return new PageResult<Notification>(result.Page, result.PerPage, result.Total, items);
     }
 }

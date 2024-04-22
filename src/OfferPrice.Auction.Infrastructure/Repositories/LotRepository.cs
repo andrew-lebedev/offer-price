@@ -17,7 +17,9 @@ public class LotRepository : ILotRepository
         _lots.Indexes.CreateMany(new[]
         {
             new CreateIndexModel<Lot>(
-                Builders<Lot>.IndexKeys.Ascending(l => l.Product.Id),
+                Builders<Lot>.IndexKeys
+                    .Text(x=>x.Product.Name)
+                    .Ascending(l => l.Product.Id),
                 new CreateIndexOptions { Unique = true }
             ),
             new CreateIndexModel<Lot>(
@@ -50,11 +52,6 @@ public class LotRepository : ILotRepository
     public Task<Lot> Get(string id, CancellationToken token)
     {
         return _lots.Find(Builders<Lot>.Filter.Eq(x => x.Id, id)).SingleOrDefaultAsync(token);
-    }
-
-    public Task<Lot> GetByProductId(string productId, CancellationToken token)
-    {
-        return _lots.Find(Builders<Lot>.Filter.Eq(x => x.Product.Id, productId)).FirstOrDefaultAsync(token);
     }
 
     public async Task<PageResult<Lot>> Find<T, K>(
@@ -90,7 +87,12 @@ public class LotRepository : ILotRepository
         var untilFilter = Builders<Lot>.Filter.Lte(l => l.Start, until);
         var statusFilter = Builders<Lot>.Filter.Eq(l => l.Status, LotStatus.Planned);
 
-        return _lots.Find(untilFilter & statusFilter).ToListAsync(cancellationToken);
+        var sort = Builders<Lot>.Sort.Ascending(s => s.Start);
+
+        return _lots
+            .Find(untilFilter & statusFilter)
+            .Sort(sort)
+            .ToListAsync(cancellationToken);
     }
 
     public Task<List<Lot>> GetNonFinished(DateTime until, CancellationToken cancellationToken)
@@ -139,7 +141,7 @@ public class LotRepository : ILotRepository
             Builders<Lot>.Update
                 .Set(x => x.Product, lot.Product)
                 .Set(x => x.Winner, lot.Winner)
-                .Set(x => x.Price, lot.Price)
+                .Set(x => x.CurrentPrice, lot.CurrentPrice)
                 .Set(x => x.BetHistory, lot.BetHistory)
                 .Set(x => x.Start, lot.Start)
                 .Set(x => x.End, lot.End)
@@ -148,5 +150,37 @@ public class LotRepository : ILotRepository
                 .Set(x => x.Updated, lot.Updated),
             cancellationToken: cancellationToken
         );
+    }
+
+    public async Task<IEnumerable<Lot>> GetNonPlanned(CancellationToken cancellationToken)
+    {
+        var sort = Builders<Lot>.Sort.Descending(l => l.Updated);
+        var statusFilter = Builders<Lot>.Filter.Eq(l => l.Status, LotStatus.Created);
+
+        return await _lots
+            .Find(statusFilter)
+            .Sort(sort)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Lot>> GetSameLots(Lot lot, CancellationToken cancellationToken)
+    {
+        var sort = Builders<Lot>.Sort.Descending(l => l.Start);
+        var statusFilter = Builders<Lot>.Filter.Eq(l => l.Status, LotStatus.Planned);
+
+        var categoryFilter = Builders<Lot>.Filter.Eq(l => l.Product.Category, lot.Product.Category);
+
+        return await _lots
+            .Find(statusFilter & categoryFilter)
+            .Sort(sort)
+            .Limit(10)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Lot>> GetFavorities(IEnumerable<string> lotIds, CancellationToken cancellationToken)
+    {
+        return await _lots
+            .Find(Builders<Lot>.Filter.In(x => x.Id, lotIds))
+            .ToListAsync(cancellationToken);
     }
 }

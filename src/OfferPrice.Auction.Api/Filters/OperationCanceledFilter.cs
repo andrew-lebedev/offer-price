@@ -27,7 +27,7 @@ public class OperationCanceledFilter : IExceptionFilter
                 new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 409, context.Exception.Message)),
 
             _ =>
-                new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 500))
+                new ObjectResult(problemDetailsFactory.CreateProblemDetails(context.HttpContext, 500, context.Exception.Message))
         };
     }
 }

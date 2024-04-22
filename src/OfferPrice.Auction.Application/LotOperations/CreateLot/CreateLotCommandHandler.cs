@@ -32,6 +32,8 @@ public class CreateLotCommandHandler : IRequestHandler<CreateLotCommand>
 
         var lot = _mapper.Map<Domain.Models.Lot>(request);
 
+        lot.Product.User = user;
+
         await _lotRepository.Create(lot, cancellationToken);
     }
 }

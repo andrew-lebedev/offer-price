@@ -11,9 +11,9 @@ using OfferPrice.Auction.Application.LotOperations.GetLot;
 using OfferPrice.Auction.Application.LotOperations.UpdateLot;
 using OfferPrice.Common;
 using OfferPrice.Events.Events;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace OfferPrice.Auction.Api.Controllers.v1;
 
 [ApiController]
@@ -38,8 +38,8 @@ public class LotController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] FindRegularLotsRequest request, CancellationToken token)
     {
-        var cmd = _mapper.Map<GetRegularLotsCommand>(request);
-        
+        var cmd = new GetRegularLotsCommand() { Query = request.ToQuery() };
+
         var result = await _mediator.Send(cmd, token);
 
         return Ok(new FindLotsResponse(result));
@@ -55,14 +55,16 @@ public class LotController : ControllerBase
         return Ok(_mapper.Map<GetLotResponse>(lot));
     }
 
-    [HttpGet("user")]
-    public async Task<IActionResult> GetUserBets([FromQuery] FindUserLotsRequest request, CancellationToken cancellationToken)
+    [HttpGet("user")] //todo
+    public async Task<IActionResult> GetUserLots([FromQuery] FindUserLotsRequest request, CancellationToken cancellationToken)
     {
-        var cmd = _mapper.Map<GetUserLotsCommand>(request);
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
+        var cmd = new GetUserLotsCommand() { Query = request.ToQuery(userId) };
 
         var lots = await _mediator.Send(cmd, cancellationToken);
 
-        return Ok(lots);
+        return Ok(new FindLotsResponse(lots));
     }
 
     [HttpPost]
@@ -74,6 +76,13 @@ public class LotController : ControllerBase
         cmd.UserId = userId;
 
         await _mediator.Send(cmd, cancellationToken);
+
+        await _publishEndpoint.Publish<NotificationCreateEvent>(new()
+        {
+            UserId = userId,
+            Subject = "OfferPrice",
+            Body = "You've successfully create lot"
+        });
 
         return Ok();
     }
@@ -120,5 +129,39 @@ public class LotController : ControllerBase
         await _mediator.Send(cmd, token);
 
         return Ok();
+    }
+
+    [HttpGet("favorites")]
+    public async Task<IActionResult> GetFavorites([FromQuery] Paging paging, CancellationToken cancellationToken)
+    {
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+
+        var cmd = new GetFavoriteLotsCommand() { UserId = userId, Paging = paging };
+
+        var favorities = await _mediator.Send(cmd, cancellationToken);
+
+        return Ok(favorities);
+    }
+
+    [HttpGet("with-user-bets")]
+    public async Task<IActionResult> GetUserBets([FromQuery] Paging paging, CancellationToken cancellationToken)
+    {
+        var userId = ClaimValuesExtractionHelper.GetClientIdFromUserClaimIn(HttpContext);
+        var cmd = new GetLotsWithUserBetsCommand()
+        {
+            Query = new Domain.Queries.FindLotsQuery()
+            {
+                BetsWithUserId = userId,
+                Paging = paging
+            }
+        };
+
+        var result = await _mediator.Send(cmd, cancellationToken);
+
+        return Ok(new PageResult<GetUserBetResponse>(
+            result.Page,
+            result.PerPage,
+            result.Total,
+            result.Items.Select(x => new GetUserBetResponse(x)).ToList()));
     }
 }

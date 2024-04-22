@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(settings);
         services.AddHostedService<StartAuctionJob>();
         services.AddHostedService<FinishAuctionJob>();
+        services.AddHostedService<PlaningAuctionJob>();
 
         return services;
     }

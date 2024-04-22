@@ -9,10 +9,14 @@ public class FindLotsResponse
 {
     public FindLotsResponse(PageResult<Lot> pageResult)
     {
-        Lots = pageResult.Items.Select(x => new Lot(x)).ToList();
+        Lots = pageResult.Items;
         Total = pageResult.Total;
+        Page = pageResult.Page;
+        PerPage = pageResult.PerPage;
     }
 
     public List<Lot> Lots { get; set; }
     public long Total { get; set; }
+    public int Page {  get; set; }
+    public int PerPage { get; set; }
 }

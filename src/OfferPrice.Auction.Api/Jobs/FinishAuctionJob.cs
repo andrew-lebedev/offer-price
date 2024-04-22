@@ -76,13 +76,16 @@ public class FinishAuctionJob : BackgroundService
                 },
                 cancellationToken);
 
-                await _bus.Publish<NotificationCreateEvent>(new()
+                if (lot.Winner is not null)
                 {
-                    UserId = lot.Winner.Id,
-                    Subject = "OfferPrice",
-                    Body = $"Auction is over on lot with product {lot.Product.Name}. You are the winner!"
-                },
+                    await _bus.Publish<NotificationCreateEvent>(new()
+                    {
+                        UserId = lot.Winner.Id,
+                        Subject = "OfferPrice",
+                        Body = $"Auction is over on lot with product {lot.Product.Name}. You are the winner!"
+                    },
                 cancellationToken);
+                }
             }
             catch
             {

@@ -2,9 +2,13 @@
 
 public interface IQueryFilterBuilder<T>
 {
+    IQueryFilterBuilder<T> AddSearching();
+
     IQueryFilterBuilder<T> AddProductOwner();
 
     IQueryFilterBuilder<T> AddWinner();
+
+    IQueryFilterBuilder<T> AddUserBets();
 
     IQueryFilterBuilder<T> AddLotStatus();
 
